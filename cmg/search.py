@@ -72,7 +72,13 @@ def final_check(X, Z, A, level, hist):
 def run(x0, z0, a0, depth, label):
     X = np.array([x0], F); Z = np.array([z0], F); A = np.array([a0], np.int64)
     levels = [(None, None)]  # (parent idx, action idx)
-    acts = [(t, m) for t in range(len(TURNS)) for m in range(len(MOVES))]
+    maxess = int(os.environ.get("MAXESS", "8")); nocard = bool(os.environ.get("NOCARD"))
+    def cheap(name):
+        if nocard and ("Card" in name or "Spin" in name): return False
+        import re
+        m = re.search(r"x(\d+)", name)
+        return not ("ESS" in name and int(m.group(1)) > maxess)
+    acts = [(t, m) for t in range(len(TURNS)) for m in range(len(MOVES)) if cheap(TURNS[t][0])]
     def hist(level, i):
         out = []
         while level > 0:
