@@ -1,0 +1,18 @@
+import sys; sys.path.insert(0, __import__('os').path.dirname(__file__))
+from prims import *
+g = G(ROM); g.load(ENTRY)
+print("entry", g.st())
+g.run([(6, 0, 0, 0)])
+def show(t): x,y,z,a,c,m,s = g.st(); print(f"{t:28s} x={x:.6f} z={z:.6f} a={a:04X} cam={c:04X}")
+g.run(ess(7, False)); show("-7 ESS")
+g.run(shield_scoot_forward()); show("scoot fwd")
+g.run(ess(8, False)); show("-8 ESS")
+g.run(hold_sidehop(True)); show("sidehop L")
+g.run(shield_scoot_forward()); show("scoot fwd")
+g.run(ess(3, False)); show("-3 ESS")
+g.run(hold_sidehop(True)); show("sidehop L")
+cardinal(g, "DOWN"); show("card down")
+g.run(spin_in_place(1)); show("spin in place")
+tr = []
+g.run(final_walk(int(sys.argv[1]) if len(sys.argv) > 1 else 59) + [(20, 0, 0, 127)], tr)
+for i, s in enumerate(tr[-34:]): print(i, " ".join(f"{v:.4f}" if isinstance(v, float) else f"{v:04X}" for v in s))
