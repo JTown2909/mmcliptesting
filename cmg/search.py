@@ -12,6 +12,14 @@ for f in glob.glob(SP + "/cam_table_*.csv"):
         v = [int(t, 16) for t in line.strip().split(",")]
         b = v[0] >> 4; camt[b] = v[1]; snap[b] = v[2]; card[0, b], card[1, b], card[2, b] = v[3], v[5], v[7]
 assert (camt != 0).sum() > 4000, "camera table incomplete"
+# exact targeted camera for facings near the clip approach (low bits of the facing matter there)
+camx = np.full(65536, -1, np.int64)
+for f in glob.glob(SP + "/camexact_*.csv"):
+    for line in open(f):
+        a, c = line.strip().split(","); camx[int(a, 16)] = int(c, 16)
+def camfinal(f):
+    c = camx[f]
+    return np.where(c >= 0, c, camt[f >> 4])
 DIRS = ["LEFT", "RIGHT", "DOWN"]
 ESS = 0x708
 def T_ess(k): return lambda A: (A + k * ESS) & 0xFFFF
@@ -49,7 +57,8 @@ def valid(X, Z):
 def final_check(X, Z, A, level, hist):
     hits = []
     for tn, tf in TURNS:
-        f = tf(A); w = camt[f >> 4]
+        f = tf(A); w = camfinal(f)
+        w = np.where(np.isin(w, list(APPROACH)), w, w + 1)  # camera ends in ...0 or ...1 depending on its prior state
         for W in np.unique(w):
             if int(W) not in APPROACH: continue
             sel = np.nonzero(w == W)[0]
