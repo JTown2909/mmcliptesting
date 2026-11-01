@@ -96,3 +96,23 @@ Tap L + SpinInPlace x2 | Backflip | HSpinU | Tap L + SpinInPlace x1 | HSpinL | T
 Without ESS the facing can only be adjusted in 0x1E0 steps (spin in place), so these are much slower
 than S4. A cardinal-only SE corner pin was tested and is not reliable (Link stops against the east
 wall instead of sliding to the corner for some facings).
+
+## Guano scoots, at most one ESS step, no diagonals (exhaustive to 4 moves)
+Moves: sidehops, scoot, backflip, shield spins U/L/R, guano shield-scoot chains of 1–6 (L/R, chain
+reset before each), back-wall pin; turns: cardinal shield turns, spins in place ≤4, at most one ESS
+step. 33 setups pass the exact check, 8 clip in the emulator (guano scoots depend on the exact
+facing/camera relation, which the per-16-unit table does not capture, hence the low hit rate).
+Best (`videos/game_counter_S6_guano_1ess.mp4`, walk 49 → hold Z+Up 53 frames, A):
+
+| step | x | z | facing |
+|---|---|---|---|
+| Tap R + SpinInPlace x1 | -70.000000 | 209.750000 | BE20 |
+| SidehopL | -73.661171 | 294.419006 | BE20 |
+| SpinInPlace x2 | -73.661171 | 294.419006 | BA60 |
+| GuanoR2 | -96.324730 | 275.486877 | BA60 |
+| Tap L + SpinInPlace x1 | -96.324730 | 275.486877 | F890 |
+| GuanoR5 | -159.187225 | 309.521637 | F890 |
+| GuanoR6 | -237.029129 | 344.297516 | F890 |
+| Tap U + ESS Lx1 | -237.029129 | 344.297516 | FFA7 |
+
+13 guano scoots + 4 spins in place: not faster than S4.
