@@ -37,6 +37,8 @@ def main():
     ap.add_argument("rom"); ap.add_argument("movie")
     ap.add_argument("--offset", type=int, default=0); ap.add_argument("--frames", type=int, default=3000)
     ap.add_argument("--heaplog")
+    ap.add_argument("--dump", type=int, action="append", default=[], help="write big-endian RDRAM at this game frame (repeatable)")
+    ap.add_argument("--dumpdir", default=".")
     a = ap.parse_args()
     rows, stpath = parse(a.movie)
     sim = Sim(rom=a.rom, input_so=os.path.join(os.path.dirname(os.path.abspath(__file__)), "scriptinput", "scriptinput.so"))
@@ -74,6 +76,8 @@ def main():
             print(f"frame {n:5d} VI {vi:5d} held={held:08X} shape={sh:04X} yaw={yw:04X} par={par:04X} "
                   f"moonDraw={md:08X} patch={pb:02X} entr={ent:04X}", flush=True)
             st["last"] = snap
+        if n in a.dump:
+            open(os.path.join(a.dumpdir, f"frame{n}.rdram"), "wb").write(s.dump())
         if hl and n % 1 == 0:
             cur = heap_nodes(s); prev = st["nodes"]
             if prev is not None:

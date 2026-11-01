@@ -202,3 +202,44 @@ most of the turn, then slower single steps for the last few.
 
 Other waits seen: about 3.5 s between the bomb and the explosion hit (frames 1501-1571), and 2.7 s
 between the hit and starting the 0814 turn (frames 1571-1625).
+
+## Heap simulator (`tools/heapsim.py`) - validated against the movie
+Exact model of the JP 1.0 actor heap:
+- **Allocator (decomp `__osMalloc.c`):** first-fit `malloc` from the head; `mallocR` from the tail
+  (carves the end of a block); a block is split only if size + 0x30 < block size; `free` merges with
+  adjacent free neighbours.
+- **Actor spawn:** actor code (overlay) via `malloc`, or `mallocR` for ALLOCTYPE_PERMANENT (En_Door,
+  En_Holl, En_Bom), unless already loaded; then the instance via `malloc`. Code is freed when its last
+  instance dies (never for permanent).
+- **Sizes and alloc types** come from the game's actor overlay table (JP 1.0 RAM 0x801A9E60, 0x20 bytes per
+  actor; found through Obj_Moon_Stone's overlayEntry pointer 0x801AEEC0) plus each actor's profile in the
+  ROM: `tools/actorinfo_jp10.pkl`.
+- **Room actor lists** read from the ROM (`tools/romfiles.py`, Yaz0 + dmadata at ROM 0x1C110): torch room =
+  file 1295, pot room = file 1296. Rooms spawn their actors in list order.
+
+Quirks found, each needed to match real RAM:
+- Every room spawns its own **En_Test4**, which deletes itself on its first update (only one may exist).
+  While it lives (0x160 bytes) it occupies a hole, so later actors in the same load go elsewhere.
+- Entering the pot room **through the door re-spawns the En_Door instance before the room's actors**.
+  The door belongs to the pot room and is freed when it unloads.
+- **Memory leak:** every pot-room load allocates 2 × 0xB0 bytes right after En_Kakasi that are never freed.
+- The first pot-room re-entry also allocates 0x520 and 0x420 bytes from the top of the heap, never freed
+  (source unknown; modelled as raw allocations).
+- Bombs are owned by the room they're pulled in and are freed when it unloads, unless carried or exploded.
+  An explosion spawns En_Clear_Tag (0x5FA0 code + 0x2E84 instance) until it ends.
+
+**Validation:** `tools/route_check.py` replays the movie's events from the frame-255 heap and matches the
+real heap **exactly at all 22 checkpoints** (three torch-room loads, four pot-room loads, unloads, 3
+explosions, bombs), ending with the Moon Stone at node 0x80419E60.
+
+**What the simulator says about the setup** (`tools/route_search.py`, starting from frame 255):
+- Removing either torch-room trip -> fails (matches the runner's test).
+- Removing any of the three explosions -> fails.
+- Pulling 1 instead of 2 bombs in the pot room, or 0-2 instead of 3 bombs in the torch room -> fails.
+- Destroying the second pot before carrying the first -> **not needed** (works either way).
+- A search over first trip on/off, bombs per room (pot 1-4, torch 0-5), each explosion overlapping a room
+  load or not, and which pot is carried found **only the movie's structure** working.
+- **Unresolved:** the simulator predicts that skipping the early pot breaking (frames 172-212) changes the
+  result. With the pots alive, their code is still loaded when the torch room first loads, so the torch
+  room's pots don't allocate it again and everything shifts (target pot 0x80419F40, not 0x80419EE0). The
+  runner reports the setup still works without the pot breaking. A movie of that variant is needed to settle it.

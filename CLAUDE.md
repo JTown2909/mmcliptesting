@@ -37,6 +37,10 @@ export DISPLAY=:99 SDL_AUDIODRIVER=dummy
 | `actor_names.py` | Actor ID -> name table (from the decomp). |
 | `bk2replay.py` | Replay the runner's BizHawk `.bk2` movie in sync (`--offset -1`), print Link/ACE milestones, and `--heaplog` every heap alloc/free. |
 | `input_probe.py` | Play a scripted input list from a state and print each change to shape.rot.y / yaw / parallelYaw. |
+| `heapsim.py` | Exact actor-heap simulator (allocator + room loads/unloads + bombs/explosions), validated against the movie. |
+| `route_check.py` | Replays the movie's heap events in the simulator and compares with real snapshots (all match). |
+| `route_search.py` | Searches setup variants in the simulator. |
+| `romfiles.py` | ROM dmadata + Yaz0 reader (room actor lists). |
 | `mm_ace_watch.lua` | BizHawk Lua heap viewer + Link angle watches, for the runner. |
 | `m64run.py`, `kzs.py` | Old: RDRAM dump at a frame from boot; kz-lite state decoder. |
 
@@ -94,7 +98,7 @@ input fires the ACE at game frame 73).
 ## Open directions
 - **Angle setups:** faster ways to reach a valid pot drop angle (any of 10), and 0814 / 2CA3
   (wall snap + ESS turns). The runner's setup videos show the current method.
-- **Heap setup:** mechanism traced from the movie (two timed explosions plus room loads; see
+- **Heap setup:** see the heap-simulator section of docs/credits_warp.md (exact model, validated). Mechanism traced from the movie (two timed explosions plus room loads; see
   docs/credits_warp.md). Runner confirmed the early pot breaking is not needed and the two torch-room trips are. Open: whether anything else can be cut. That needs experiments the runner plays out
   while checking the conditions with the Lua heap viewer.
 - **Turning time:** the movie spends 21 s on ESS turns whose back-to-back minimum is 4.8 s (see docs).
