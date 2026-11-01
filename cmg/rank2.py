@@ -7,7 +7,7 @@ for line in open(sys.argv[1]):
     if not line.startswith("EXACT"): continue
     body, rest = line[6:].split(" => ")
     acts = [a.strip() for a in body.split("|")]
-    e = int(re.findall(r"\d+", rest.split("extra=")[1])[0])
+    e = int(re.findall(r"(?<![a-z])(\d+)(?![\d(])", rest.split("extra=")[1].replace("int64", ""))[0])
     parts = [p.strip() for a in acts for p in a.split(" + ")]
     ess = sum(int(m.group(1)) for p in parts for m in [re.match(r"ESS [LR]x(\d+)", p)] if m)
     taps = sum(p.startswith("Tap") for p in parts)

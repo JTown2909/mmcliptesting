@@ -21,7 +21,7 @@ if __name__ == '__main__':
         if not line.startswith("EXACT"): continue
         body, rest = line[6:].split(" => ")
         acts = [a.strip() for a in body.split("|")]
-        ex = [int(v) for v in re.findall(r"\d+", rest.split("extra=")[1])]
+        ex = [int(v) for v in re.findall(r"(?<![a-z])(\d+)(?![\d(])", rest.split("extra=")[1].replace("int64", ""))]
         for e in ex[:1]:
             rows.append((cost(acts, e), len(acts), " | ".join(acts), e))
     rows.sort()
