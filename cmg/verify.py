@@ -21,6 +21,13 @@ def do(g, a):
     if m:
         sx, sy = N8[m.group(1)]
         g.target_untarget_snap(); g.run([(1, 0, 0, 0), (1, 0, sx, sy)]); g.target_untarget_snap(); return
+    m = re.match(r"Scoot([LR])(\d)$", a)
+    if m:  # sideways shield scoot chain, earliest re-shield (3-frame release), chain reset first
+        sx = -80 if m.group(1) == "L" else 80
+        g.target_untarget_snap(); g.run([(6, 0, 0, 0), (6, Z, 0, 0)])
+        for _ in range(int(m.group(2))):
+            g.run([(10, Z | R, sx, 0), (3, Z, sx, 0), (4, Z | R, sx, 0), (1, Z | R, 0, 0)])
+        g.run([(10, 0, 0, 0)]); return
     m = re.match(r"Guano([LR])(\d)$", a)
     if m:  # imbued's guano shield scoot chain, chain reset first
         sx = -80 if m.group(1) == "L" else 80

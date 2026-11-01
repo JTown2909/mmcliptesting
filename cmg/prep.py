@@ -24,6 +24,10 @@ if os.environ.get("ZSPIN"):
             r = json.loads(line); mv = MT[r["a"] >> 4]["move"]
             for k in [k for k in mv if k.startswith("HSpin")]: del mv[k]
             mv.update(r["move"])
+if os.environ.get("SCOOT3"):
+    for f in glob.glob(SP + "/scoot3_*.jsonl"):
+        for line in open(f):
+            r = json.loads(line); MT[r["a"] >> 4]["move"].update(r["move"])
 if os.environ.get("GUANO"):
     for f in glob.glob(SP + "/guano_*.jsonl"):
         for line in open(f):
@@ -66,7 +70,7 @@ for name in MNAMES:
             buf += struct.pack("<ddHHB", 0.0, 0.0, 0, 0, ok); continue
         fr, ff = MT[b]["move"][name]
         dx = sum(d[2] for d in fr); dz = sum(d[3] for d in fr)
-        keep = name in ("SidehopL", "SidehopR", "ScootFwd", "Backflip") or name.startswith(("Guano", "ZSpin"))
+        keep = name in ("SidehopL", "SidehopR", "ScootFwd", "Backflip") or name.startswith(("Guano", "ZSpin", "ScootL", "ScootR"))
         buf += struct.pack("<ddHHB", dx, dz, 0 if keep else 1, ff, 1)
 open(OUT + "/moves.bin", "wb").write(buf)
 np.array(kinds, dtype=np.int32).tofile(OUT + "/movekind.bin")
@@ -97,7 +101,7 @@ def _tcost(n):
         c += int(m.group(1)) if m else 1
     return c
 def _mcost(n):
-    m = _re.match(r"Guano[LR](\d)", n)
+    m = _re.match(r"(?:Guano|Scoot)[LR](\d)", n)
     return int(m.group(1)) if m else 1
 np.array([_tcost(n) for n, _ in TURNS], dtype=np.int32).tofile(OUT + "/turncost.bin")
 np.array([_mcost(n) for n in MNAMES], dtype=np.int32).tofile(OUT + "/movecost.bin")
