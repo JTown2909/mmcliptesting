@@ -45,7 +45,7 @@ for d in (["U", "L", "D", "R"] if CARD_ONLY else DIRS8):
     TURNS += [(f"Tap {d} + SpinInPlace x{n}", spn(tap, n)) for n in range(1, MAXSIP + 1)]
 TURNS += [(f"SpinInPlace x{n}", spn(A, n)) for n in range(1, MAXSIP + 1)]
 np.array([t for _, t in TURNS], dtype=np.uint16).tofile(OUT + "/turns.bin")
-np.array([(1 if n.startswith("Tap") else 0) | (2 if "ESS" in n else 0) for n, _ in TURNS], dtype=np.int32).tofile(OUT + "/turnkind.bin")
+np.array([(1 if n.startswith("Tap") else 0) | (2 if "ESS" in n and not os.environ.get("ESS_ANY") else 0) for n, _ in TURNS], dtype=np.int32).tofile(OUT + "/turnkind.bin")
 
 MNAMES = list(MT[0]["move"].keys()) + ["CornerSE", "BackWall"]
 if CARD_ONLY: MNAMES = [m for m in MNAMES if m not in ("CornerSE",) and not any(m.endswith(d) for d in ("UL", "UR", "DL", "DR")) and m not in ("HSpinD", "SpinD", "SpinDt")]

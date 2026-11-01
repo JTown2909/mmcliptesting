@@ -13,6 +13,8 @@ def cost(acts, extra):
             m = re.match(r"SpinInPlace x(\d+)", p)
             if m: c += 1.3 * int(m.group(1)); continue
             if p.startswith("Tap"): c += 1.2; continue
+            m = re.match(r"Guano[LR](\d)", p)
+            if m: c += 0.6 + 0.8 * int(m.group(1)); continue
             c += {"SidehopL": .7, "SidehopR": .7, "ScootFwd": .6, "Backflip": 1.0, "CornerSE": 2.5, "BackWall": 1.5}.get(p, 1.3)
     return c + (10 + extra) / 20
 if __name__ == '__main__':
