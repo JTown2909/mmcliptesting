@@ -46,6 +46,13 @@ def do(g, a):
         k = min(range(8), key=lambda k: abs(((c + k * 0x2000) & 0xFFFF) - 0x6000))
         sx, sy = NOTCH8[k]
         g.run([(150, Z, sx, sy), (10, Z, 0, 0), (30, 0, 0, 0)]); return
+    if a == "CornerSE":  # cardinal-only: target + the cardinal toward the east wall, then toward the south wall
+        g.run([(6, Z, 0, 0)]); c = g.cam()
+        C4 = [(0, 80), (-80, 0), (0, -80), (80, 0)]  # stick for camera-relative 0, +0x4000, +0x8000, +0xC000
+        def best(target):
+            return min(range(4), key=lambda k: abs(((c + k * 0x4000 - target + 0x8000) & 0xFFFF) - 0x8000))
+        kx, kz = best(0x4000), best(0x8000)
+        g.run([(300, Z) + C4[kx], (400, Z) + C4[kz], (10, Z, 0, 0), (30, 0, 0, 0)]); return
     if a == "BackWall": g.run([(6, Z, 0, 0), (150, Z, 0, -128), (10, Z, 0, 0), (30, 0, 0, 0)]); return
     raise ValueError(a)
 
