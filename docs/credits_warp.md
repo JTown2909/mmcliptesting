@@ -78,3 +78,22 @@ Emulated from daytime QuickSave6 (17:38), ACE at VI 73:
 
 Among typeable `xori`/`sb` variants, 23:54 is already the latest pre-midnight time, so for a daytime ACE
 the current names are optimal within this payload shape.
+
+### BizHawk confirmation (runner)
+- TEST_A (night state 6 + new names): credits, no look-down needed. **Works.**
+- TEST_B (daytime state 6, clock 17:49, new names): **crashes** (red crash line). The 17:54-18:00 window is not usable.
+
+## Pot drop angle tolerance
+Link's yaw while holding the pot is written into the low half of the stale draw pointer (0x8040_yyyy).
+Emulated from TEST_A with the draw pointer forced to each value:
+
+| drop angle | result |
+|---|---|
+| 0x0A40, 0x0A4C | crash |
+| **0x0A50, 0A54, 0A58, 0A5C, 0A60, 0A64, 0A68, 0A6C, 0A70, 0A74** | ACE + credits |
+| 0x0A78 | crash (starts after the jump) |
+
+Every working angle lands in the run of zero words (nops) in Link's data at Player+0xAB0..0xAD4 that
+leads into the yaw/parallelYaw jump. The angle must be a multiple of 4: an unaligned value (0x0A62)
+happened to work in mupen64plus, but real hardware raises an address error, so don't rely on it.
+These Player fields were zero in every savestate checked, but they are live game data.
