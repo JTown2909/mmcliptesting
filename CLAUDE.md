@@ -30,7 +30,7 @@ export DISPLAY=:99 SDL_AUDIODRIVER=dummy
 | tool | use |
 |---|---|
 | `bizstate.py` | Read/patch BizHawk `.State` files. RDRAM is at Core.bin offset 0x1C0, stored as little-endian 32-bit words. `.m64p(path)` writes a gzip m64p state that mupen64plus can load. `.save(path)` writes a patched `.State` back for the runner to try in BizHawk. |
-| `m64sim.py` | Headless mupen64plus driver: load a state, set controller input every VI frame, read/write RAM, take screenshots. |
+| `m64sim.py` | Headless mupen64plus driver: load a state, set controller input every game frame, read/write RAM, take screenshots. |
 | `run_ace.py` | Ready-made scenario: load a state, press C-Up, look up, and report the ACE frame, En_Test4 bell state and scene-change frame. Can override the names, time and drop angle, and when to look down. |
 | `heapscan.py` | Walk the actor heap in a big-endian RDRAM dump; labels actors and their code overlays. |
 | `find_time_payloads.py` | Enumerate typeable `xori`/`sb` name pairs and the clock time each one sets. |

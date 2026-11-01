@@ -121,3 +121,35 @@ These Player fields were zero in every savestate checked, but they are live game
 - **Look-down window** (daytime QuickSave6, ACE at VI 73): looking down at VI 81, 120 or 135 all give the
   scene change at VI 206. At VI 145 -> 217 and VI 160 -> 232. The clock doesn't move during the night
   card anyway, so there is ~60 VI (~1 s) after the ACE to look down at no cost.
+
+## Angle mechanics (measured in emulation, game frames = 20 fps)
+Angles are u16 (0x10000 = 360°). Measured on the runner's daytime QuickSave4 (holding pot), QuickSave5
+(2CA3) and night QuickSave5 (2E1C after the explosion) with `tools/input_probe.py`.
+
+**Standing (normal camera) turns**
+- Target = camera input yaw + stick direction. Link's shape steps toward it by **0x708 per game frame**
+  and snaps exactly onto it once within 0x708. `Player.yaw` (+0xAD4) jumps to the target on the first frame.
+- A **1-frame** light-stick tap does nothing; a **2-frame** tap turns exactly one 0x708 step.
+- Cardinal ESS directions are exact: in QuickSave4 the camera input yaw is 0x2AAB (60°), and ESS
+  up/right/left/down target 2AAB / EAAB / 6AAB / AAAB. In QuickSave5 the camera is 0x2CAB.
+- Standing turns do **not** change parallelYaw (+0xAD6).
+- Ruled out: from 2AAB/2AAC, no combination of cardinal snaps (c × 0x4000) and 0x708 steps reaches any
+  valid drop angle (0A50-0A74). The runner's method for A64 must involve something else; ask them.
+
+**First-person turns (C-Up)**
+- An isolated tap from rest turns -(x - 8) × 16 per frame for stick x = 9..26 (x = 10 -> -0x20,
+  15 -> -0x70, 20 -> -0xC0), capped at **300 (0x12C)** for x >= 27. Stick right = yaw decreases.
+- Holding the stick **accelerates** the turn (after ~20 frames: -460, -660, -960 per frame), and the turn
+  keeps its momentum after the stick is eased (x = 9 kept turning 300/frame). Only isolated taps from
+  rest are predictable.
+- First-person turns do not change parallelYaw. **First person is unavailable while holding the pot.**
+- Multiples of 16, plus 300 (≡ 12 mod 16), can produce any multiple of 4, so first person can never
+  change an angle's value mod 4.
+
+**Why the explosion is probably in the 0814 setup**
+2CA3 ≡ 3 (mod 4) but 0814 ≡ 0 (mod 4). Standing turns snap to (camera yaw + stick angle); in
+QuickSave5 the camera is 0x2CAB ≡ 3, so cardinal snaps stay ≡ 3, first person preserves the class, and
+Z-targeting into empty space left the camera at 2CAB. The bomb knockback sets yaw = 2E1C (≡ 0) **without
+touching parallelYaw (2CA3)**, which moves Link into the right class for 0814. (Inferred from the
+arithmetic; the runner should confirm.) An attempt to plan 2E1C -> 0814 frame-exactly in first person
+overshot because of the turn acceleration.
