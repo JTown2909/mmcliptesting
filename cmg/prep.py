@@ -81,5 +81,20 @@ for ti, (_, tf) in enumerate(TURNS):
         idx = np.nonzero((w == W) & (cnt < 8))[0]
         fin[idx, 2 * cnt[idx]] = ti; fin[idx, 2 * cnt[idx] + 1] = ri; cnt[idx] += 1
 fin.tofile(OUT + "/final.bin")
+import re as _re
+def _tcost(n):
+    c = 0
+    for part in n.split(" + "):
+        part = part.strip()
+        if not part: continue
+        m = _re.match(r"SpinInPlace x(\d+)", part)
+        c += int(m.group(1)) if m else 1
+    return c
+def _mcost(n):
+    m = _re.match(r"Guano[LR](\d)", n)
+    return int(m.group(1)) if m else 1
+np.array([_tcost(n) for n, _ in TURNS], dtype=np.int32).tofile(OUT + "/turncost.bin")
+np.array([_mcost(n) for n in MNAMES], dtype=np.int32).tofile(OUT + "/movecost.bin")
+np.array([1 if "ESS" in n else 0 for n, _ in TURNS], dtype=np.int32).tofile(OUT + "/turness.bin")
 json.dump(dict(turns=[n for n, _ in TURNS], moves=MNAMES, rays=RAYW), open(OUT + "/names.json", "w"))
 print("turns", len(TURNS), "moves", len(MNAMES), "rays", len(RAYW), "facings with a final turn", (cnt > 0).sum(), "max", cnt.max())
