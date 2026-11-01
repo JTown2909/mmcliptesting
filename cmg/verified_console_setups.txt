@@ -1,0 +1,42 @@
+ess spin_in_place taps walk est_s dir_spins setup
+  1  4  4  48 17.35 1  Tap UL + SpinInPlace x1 | ScootFwd | Tap L + SpinInPlace x1 | Backflip | SidehopR | Tap DL + ESS Lx1 | HSpinU | Tap L + SpinInPlace x2
+  1  4  4  48 17.35 1  Tap UL + SpinInPlace x1 | ScootFwd | Tap L + SpinInPlace x1 | SidehopR | Backflip | Tap DL + ESS Lx1 | HSpinU | Tap L + SpinInPlace x2
+  1  4  5  48 18.55 1  Tap UL + SpinInPlace x1 | ScootFwd | Tap L + SpinInPlace x1 | Backflip | Tap U | SidehopR | Tap DL + ESS Lx1 | HSpinU | Tap L + SpinInPlace x2
+  1  4  5  48 18.55 1  Tap UL + SpinInPlace x1 | ScootFwd | Tap L + SpinInPlace x1 | SidehopR | Tap U | Backflip | Tap DL + ESS Lx1 | HSpinU | Tap L + SpinInPlace x2
+  1  4  5  48 18.55 1  Tap UL + SpinInPlace x1 | ScootFwd | Tap R + SpinInPlace x1 | SidehopL | Tap D | Backflip | Tap DL + ESS Lx1 | HSpinU | Tap L + SpinInPlace x2
+  5  5  4  52 20.55 0  Tap UL + ESS Lx4 | Backflip | SpinInPlace x1 | SidehopR | Tap L + ESS Lx1 | Backflip | Tap DR + SpinInPlace x2 | Backflip | Tap UR + SpinInPlace x2
+  7  2  4  47 18.40 1  Tap DL + SpinInPlace x2 | Backflip | Tap D + ESS Lx2 | HSpinU | ESS Rx1 | Backflip | Tap DR + ESS Lx2 | SidehopL | Tap DL + ESS Lx2
+  7  2  4  47 18.40 1  Tap DL + SpinInPlace x2 | Backflip | Tap D + ESS Lx2 | HSpinU | ESS Rx1 | Backflip | Tap UL + ESS Lx2 | SidehopR | Tap UR + ESS Lx2
+  7  2  5  47 19.60 1  Tap DL + SpinInPlace x2 | Backflip | Tap D + ESS Lx2 | HSpinU | Tap U + ESS Rx1 | Backflip | Tap DR + ESS Lx2 | SidehopL | Tap DL + ESS Lx2
+  7  2  5  47 19.60 1  Tap DL + SpinInPlace x2 | Backflip | Tap D + ESS Lx2 | HSpinU | Tap U + ESS Rx1 | Backflip | Tap UL + ESS Lx2 | SidehopR | Tap UR + ESS Lx2
+  7  2  5  52 19.75 1  Tap D + ESS Lx4 | Backflip | Tap UL + ESS Rx1 | ScootFwd | Tap DR + ESS Lx1 | Backflip | Tap DL + SpinInPlace x2 | HSpinU | Tap L + ESS Lx1
+  8  2  5  37 19.05 2  Tap D + SpinInPlace x1 | Backflip | Tap L + ESS Lx1 | SidehopL | Tap R + ESS Lx4 | HSpinL | Tap DL + SpinInPlace x1 | HSpinL | Tap UL + ESS Lx3
+  8  2  5  37 19.05 2  Tap D + SpinInPlace x1 | Backflip | Tap R + ESS Lx1 | SidehopR | Tap L + ESS Lx4 | HSpinL | Tap DL + SpinInPlace x1 | HSpinL | Tap UL + ESS Lx3
+  8  2  5  56 18.70 1  Tap UR + SpinInPlace x1 | SidehopL | Tap L + ESS Rx1 | ScootFwd | Tap DL + ESS Rx7 | Backflip | Tap R | HSpinR | Tap DL + SpinInPlace x1
+  9  2  3  64 17.45 0  Tap UR + ESS Rx1 | ScootFwd | ESS Lx4 | ScootFwd | Tap DL + SpinInPlace x2 | Backflip | ESS Lx3 | SidehopL | Tap DR + ESS Rx1
+  9  2  4  47 18.90 1  Tap DL + SpinInPlace x2 | Backflip | Tap D + ESS Lx2 | HSpinU | Tap DR + ESS Lx1 | SidehopL | Tap DL + ESS Rx2 | Backflip | ESS Lx4
+  9  2  4  47 18.90 1  Tap DL + SpinInPlace x2 | Backflip | Tap D + ESS Lx2 | HSpinU | Tap UL + ESS Lx1 | SidehopR | Tap UR + ESS Rx2 | Backflip | ESS Lx4
+  9  2  4  64 18.65 0  Tap UR + ESS Rx1 | ScootFwd | Tap U + ESS Lx4 | ScootFwd | Tap DL + SpinInPlace x2 | Backflip | ESS Lx3 | SidehopL | Tap DR + ESS Rx1
+  9  2  5  38 19.25 1  Tap L + SpinInPlace x2 | ScootFwd | Tap L + ESS Lx2 | SidehopL | Tap DL + ESS Lx2 | HSpinU | Tap L + ESS Lx4 | Backflip | Tap DR + ESS Lx1
+  9  2  5  38 19.25 1  Tap L + SpinInPlace x2 | ScootFwd | Tap R + ESS Lx2 | SidehopR | Tap UR + ESS Lx2 | HSpinU | Tap L + ESS Lx4 | Backflip | Tap DR + ESS Lx1
+  9  2  5  47 20.10 1  Tap DL + SpinInPlace x2 | Backflip | Tap D + ESS Lx2 | HSpinU | Tap DR + ESS Lx1 | SidehopL | Tap DL + ESS Rx2 | Backflip | Tap U + ESS Lx4
+  9  2  5  47 20.10 1  Tap DL + SpinInPlace x2 | Backflip | Tap D + ESS Lx2 | HSpinU | Tap UL + ESS Lx1 | SidehopR | Tap UR + ESS Rx2 | Backflip | Tap U + ESS Lx4
+  9  2  5  55 19.20 0  Tap DL + ESS Rx2 | Backflip | Tap R + ESS Lx4 | Backflip | Tap D + ESS Lx3 | SidehopL | Tap DR + SpinInPlace x2 | ScootFwd | Tap DR
+  9  2  5  55 19.20 0  Tap DL + ESS Rx2 | Backflip | Tap R + ESS Lx4 | Backflip | Tap U + ESS Lx3 | SidehopR | Tap UL + SpinInPlace x2 | ScootFwd | Tap DR
+  9  2  5  65 20.00 0  Tap DL + SpinInPlace x2 | Backflip | Tap UL + ESS Lx1 | ScootFwd | Tap DR + ESS Lx6 | Backflip | Tap R + ESS Rx2 | Backflip | Tap U
+ 10  2  5  48 18.80 0  Tap DL | Backflip | Tap L + ESS Rx5 | SidehopL | Tap L + SpinInPlace x2 | SidehopL | Tap UR + ESS Lx2 | ScootFwd | Tap L + ESS Lx3
+ 11  0  4  48 16.05 1  Tap DL | ScootFwd | Tap L + ESS Rx1 | ScootFwd | Tap DR + ESS Rx2 | SidehopR | Tap DR + ESS Rx4 | HSpinUL | ESS Lx4
+ 11  0  4  48 16.05 1  Tap DL | ScootFwd | Tap L + ESS Rx1 | ScootFwd | Tap UL + ESS Rx2 | SidehopL | Tap UL + ESS Rx4 | HSpinUL | ESS Lx4
+ 11  0  5  48 17.25 1  Tap DL | ScootFwd | Tap L + ESS Rx1 | ScootFwd | Tap DR + ESS Rx2 | SidehopR | Tap DR + ESS Rx4 | HSpinUL | Tap U + ESS Lx4
+ 11  0  5  48 17.25 1  Tap DL | ScootFwd | Tap L + ESS Rx1 | ScootFwd | Tap UL + ESS Rx2 | SidehopL | Tap UL + ESS Rx4 | HSpinUL | Tap U + ESS Lx4
+--- by est time
+ 18  1  1  59 14.85 0  ESS Rx7 | ScootFwd | ESS Rx8 | ScootFwd | SidehopL | ESS Rx3 | SidehopL | Tap D + SpinInPlace x1
+ 18  1  1  59 14.85 0  ESS Rx7 | ScootFwd | ESS Rx8 | SidehopL | ScootFwd | ESS Rx3 | SidehopL | Tap D + SpinInPlace x1
+ 11  0  4  48 16.05 1  Tap DL | ScootFwd | Tap L + ESS Rx1 | ScootFwd | Tap DR + ESS Rx2 | SidehopR | Tap DR + ESS Rx4 | HSpinUL | ESS Lx4
+ 11  0  4  48 16.05 1  Tap DL | ScootFwd | Tap L + ESS Rx1 | ScootFwd | Tap UL + ESS Rx2 | SidehopL | Tap UL + ESS Rx4 | HSpinUL | ESS Lx4
+ 17  0  3  14 16.95 3  Tap DR + ESS Rx5 | Backflip | Tap D + ESS Rx6 | HSpinU | Tap D + ESS Rx2 | HSpinR | ESS Lx3 | HSpinU | ESS Lx1
+ 18  0  3  36 17.00 1  Tap UR + ESS Rx5 | SidehopL | ESS Lx1 | HSpinUL | ESS Lx2 | ScootFwd | Tap D + ESS Rx8 | Backflip | Tap R + ESS Rx2
+ 15  0  4  48 17.05 1  Tap DL | ScootFwd | Tap DL + ESS Rx3 | SidehopL | Tap UR + ESS Lx2 | ScootFwd | Tap L + ESS Rx6 | HSpinUL | ESS Lx4
+ 15  0  4  48 17.05 1  Tap DL | ScootFwd | Tap UR + ESS Rx3 | SidehopR | Tap DL + ESS Lx2 | ScootFwd | Tap L + ESS Rx6 | HSpinUL | ESS Lx4
+ 11  0  5  48 17.25 1  Tap DL | ScootFwd | Tap L + ESS Rx1 | ScootFwd | Tap DR + ESS Rx2 | SidehopR | Tap DR + ESS Rx4 | HSpinUL | Tap U + ESS Lx4
+ 11  0  5  48 17.25 1  Tap DL | ScootFwd | Tap L + ESS Rx1 | ScootFwd | Tap UL + ESS Rx2 | SidehopL | Tap UL + ESS Rx4 | HSpinUL | Tap U + ESS Lx4
