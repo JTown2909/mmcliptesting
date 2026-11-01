@@ -15,18 +15,19 @@ def cost(acts, extra):
             if p.startswith("Tap"): c += 1.2; continue
             c += {"SidehopL": .7, "SidehopR": .7, "ScootFwd": .6, "Backflip": 1.0, "CornerSE": 2.5, "BackWall": 1.5}.get(p, 1.3)
     return c + (10 + extra) / 20
-rows = []
-for line in open(sys.argv[1]):
-    if not line.startswith("EXACT"): continue
-    body, rest = line[6:].split(" => ")
-    acts = [a.strip() for a in body.split("|")]
-    ex = [int(v) for v in re.findall(r"\d+", rest.split("extra=")[1])]
-    for e in ex[:1]:
-        rows.append((cost(acts, e), len(acts), " | ".join(acts), e))
-rows.sort()
-imb = cost("ESS Rx7|ScootFwd|ESS Rx8|SidehopL|ScootFwd|ESS Rx3|SidehopL|Tap D + SpinInPlace x1".split("|"), 59)
-print(f"# imbued's setup: {imb:.2f}s; {len(rows)} exact setups")
-seen = set()
-for c, n, s, e in rows:
-    if s in seen: continue
-    seen.add(s); print(f"{c:6.2f}  extra={e:2d}  {s}")
+if __name__ == '__main__':
+    rows = []
+    for line in open(sys.argv[1]):
+        if not line.startswith("EXACT"): continue
+        body, rest = line[6:].split(" => ")
+        acts = [a.strip() for a in body.split("|")]
+        ex = [int(v) for v in re.findall(r"\d+", rest.split("extra=")[1])]
+        for e in ex[:1]:
+            rows.append((cost(acts, e), len(acts), " | ".join(acts), e))
+    rows.sort()
+    imb = cost("ESS Rx7|ScootFwd|ESS Rx8|SidehopL|ScootFwd|ESS Rx3|SidehopL|Tap D + SpinInPlace x1".split("|"), 59)
+    print(f"# imbued's setup: {imb:.2f}s; {len(rows)} exact setups")
+    seen = set()
+    for c, n, s, e in rows:
+        if s in seen: continue
+        seen.add(s); print(f"{c:6.2f}  extra={e:2d}  {s}")
