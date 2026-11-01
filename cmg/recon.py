@@ -1,5 +1,5 @@
 """Rebuild candidate paths from c/search output, re-check them exactly (fp32), print action lists."""
-import sys, glob, json, numpy as np
+import sys, os, glob, json, numpy as np
 from sim import *
 from clipcheck import APPROACH, check
 SP = "/tmp/claude-0/-home-user-mmcliptesting/a78033bb-8150-5832-a8b0-7d77af0af2f6/scratchpad"
@@ -11,6 +11,14 @@ MT = {}
 for f in glob.glob(SP + "/moves_*.jsonl"):
     for line in open(f):
         r = json.loads(line); MT[r["a"] >> 4] = r
+HSPIN = bool(os.environ.get("HSPIN"))
+if HSPIN:
+    for f in glob.glob(SP + "/hspin_*.jsonl"):
+        for line in open(f):
+            r = json.loads(line)
+            mv = MT[r["a"] >> 4]["move"]
+            for k in [k for k in mv if k.startswith("Spin")]: del mv[k]
+            mv.update(r["move"])
 camt = np.array([MT[b]["camt"] for b in range(4096)])
 camx = {}
 for f in glob.glob(SP + "/camexact_*.csv"):
@@ -37,7 +45,7 @@ def exact(steps):
         for sp, ang, _, _ in fr:
             v = np.frombuffer(bytes.fromhex(sp), dtype=">f4")[0].astype(F)
             x, z = move(x, z, ang, [v])
-        if name.startswith("Spin"): a = ff
+        if name.startswith(("Spin", "HSpin")): a = ff
     return x, z, a
 seen = set()
 for line in open(D + "/hits.txt"):

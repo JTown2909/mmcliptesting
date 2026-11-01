@@ -5,6 +5,7 @@ from prims import *
 
 # stick for camera-relative angle k*0x2000 (0=up, 0x4000=left, ...)
 N8 = dict(U=(0, 127), UL=(-90, 90), L=(-128, 0), DL=(-90, -90), D=(0, -128), DR=(90, -90), R=(127, 0), UR=(90, 90))
+H8 = dict(U=(0, 80), UL=(-69, 69), L=(-80, 0), DL=(-69, -69), D=(0, -80), DR=(69, -69), R=(80, 0), UR=(69, 69))
 NOTCH8 = [(0, 127), (-90, 90), (-128, 0), (-90, -90), (0, -128), (90, -90), (127, 0), (90, 90)]
 def do(g, a):
     a = a.strip()
@@ -20,6 +21,12 @@ def do(g, a):
     if m:
         sx, sy = N8[m.group(1)]
         g.target_untarget_snap(); g.run([(1, 0, 0, 0), (1, 0, sx, sy)]); g.target_untarget_snap(); return
+    m = re.match(r"HSpin(U|UL|L|DL|D|DR|R|UR)$", a)
+    if m:  # console method: shield, hold direction, release shield, A one frame later, re-shield
+        sx, sy = H8[m.group(1)]
+        g.target_untarget_snap()
+        g.run([(4, R, 0, 0), (8, R, sx, sy), (1, 0, sx, sy), (1, A, sx, sy), (8, 0, sx, sy), (25, R, sx, sy), (10, R, 0, 0), (12, 0, 0, 0)])
+        g.target_untarget_snap(); return
     m = re.match(r"Spin(U|UL|L|DL|D|DR|R|UR)(t?)$", a)
     if m:
         sx, sy = N8[m.group(1)]

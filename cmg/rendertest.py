@@ -1,5 +1,5 @@
 import sys, ctypes as C; sys.path.insert(0, ".")
-import os; os.environ["M64_GFX"] = "video-angrylion-headless.so"
+import os; os.environ["M64_GFX"] = "video-angrylion-headless.so"; os.environ["M64_RSP"] = "mupen64plus-rsp-cxd4.so"
 from prims import *
 from PIL import Image
 g = G(ROM)

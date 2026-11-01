@@ -1,5 +1,5 @@
 """Export lookup tables for c/search.c from the emulator-measured move table (gen_moves.py)."""
-import sys, glob, json, struct, numpy as np
+import sys, os, glob, json, struct, numpy as np
 from sim import *
 from clipcheck import APPROACH, GRIDS
 SP = "/tmp/claude-0/-home-user-mmcliptesting/a78033bb-8150-5832-a8b0-7d77af0af2f6/scratchpad"
@@ -10,6 +10,14 @@ MT = {}
 for f in glob.glob(SP + "/moves_*.jsonl"):
     for line in open(f):
         r = json.loads(line); MT[r["a"] >> 4] = r
+HSPIN = bool(os.environ.get("HSPIN"))
+if HSPIN:
+    for f in glob.glob(SP + "/hspin_*.jsonl"):
+        for line in open(f):
+            r = json.loads(line)
+            mv = MT[r["a"] >> 4]["move"]
+            for k in [k for k in mv if k.startswith("Spin")]: del mv[k]
+            mv.update(r["move"])
 assert len(MT) == 4096, len(MT)
 camt = np.array([MT[b]["camt"] for b in range(4096)])
 camx = np.full(65536, -1, np.int64)
@@ -37,7 +45,7 @@ MNAMES = list(MT[0]["move"].keys()) + ["CornerSE", "BackWall"]
 kinds = []
 buf = bytearray()
 for name in MNAMES:
-    kinds.append(1 if name == "CornerSE" else 2 if name == "BackWall" else 3 if name.startswith("Spin") else 0)
+    kinds.append(1 if name == "CornerSE" else 2 if name == "BackWall" else 3 if name.startswith(("Spin", "HSpin")) else 0)
     for b in range(4096):
         if name in ("CornerSE", "BackWall"):
             ok = 1 if name == "CornerSE" else int(camt[b] == 0 and b == 0)

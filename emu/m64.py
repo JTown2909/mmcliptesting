@@ -29,7 +29,7 @@ FRAMECB = C.CFUNCTYPE(None, C.c_uint)
 class M64:
     def __init__(self, rom, verbose=False):
         self.core = C.CDLL(os.path.join(BIN, "libmupen64plus.so.2"), mode=C.RTLD_GLOBAL)
-        self.rsp = C.CDLL(os.path.join(BIN, "mupen64plus-rsp-hle.so"))
+        self.rsp = C.CDLL(os.path.join(BIN, os.environ.get("M64_RSP", "mupen64plus-rsp-hle.so")))
         self.inp = C.CDLL(os.path.join(BIN, "harness-input.so"))
         self.gfx = C.CDLL(os.path.join(BIN, os.environ.get("M64_GFX", "video-stub.so")))
         self.buttons = C.c_uint.in_dll(self.inp, "harness_buttons")
