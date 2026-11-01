@@ -116,3 +116,11 @@ Best (`videos/game_counter_S6_guano_1ess.mp4`, walk 49 → hold Z+Up 53 frames, 
 | Tap U + ESS Lx1 | -237.029129 | 344.297516 | FFA7 |
 
 13 guano scoots + 4 spins in place: not faster than S4.
+
+## Everything except diagonals (unlimited ESS, guano scoots, shield spins, spins in place) — exhaustive to 4 moves
+6897 setups pass the exact check; the 204 fastest/shortest were replayed in the emulator (71 clip), and
+the 60 fastest near-misses were re-searched from the emulator's exact state after 2–3 moves (5 more clip).
+Ranked by estimated time and step count (each guano scoot and each spin in place = 1 step), imbued's
+setup (9 steps, walk 59) is still first. The best new no-diagonal setup that clips:
+Tap R + ESS Rx6 | SidehopL | SpinInPlace x2 | SidehopL | GuanoL1 | SpinInPlace x2 | ScootFwd | Tap L + ESS Lx7
+(12 steps, walk 55). All verified setups: `verified_nodiag_setups.txt`.
