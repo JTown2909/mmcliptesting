@@ -40,7 +40,7 @@ def path(L, i):
         s = level(L)[i]; out.append((int(s["t"]), int(s["m"]))); i = int(s["par"]); L -= 1
     return out[::-1]
 def exact(steps):
-    x, z, a = F(x0), F(z0), int(a0)
+    x, z, a = F(x0), F(z0), int(float(a0))
     for t, m in steps:
         a = int(TURNS[t][a]); name = N["moves"][m]
         if name == "CornerSE": x, z = F(66), F(134); continue
