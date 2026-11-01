@@ -59,3 +59,22 @@ addresses in this heap layout. `tools/find_time_payloads.py` lists every option.
 
 That saves at least 56 VI (~0.93 s), more in practice because the look-down input is gone entirely.
 Both runs reach the same ending scene (Tatl/Tael "あっ！気がついた" text box) and keep running.
+
+## Daytime ACE (setup done before 18:00) - tested on the second batch of savestates
+Heap layout is identical (Moon Stone 0x80419E90, En_Test4 code 0x80412AD0, same draw pointer 0x80400A64).
+Pot drop angle 0x0A64 is the low half of that draw pointer (high half 0x8040).
+
+Bell logic on day 3 in daytime: nextBellTime is 17:30/17:36/.../17:54, and only becomes 00:00 after
+the 17:54 bell. The warp only fires when a bell rings **while nextBellTime == 00:00**. Any jump past
+18:00 first runs the night transition (title card), which returns early and skips the bell check.
+
+Emulated from daytime QuickSave6 (17:38), ACE at VI 73:
+| payload / situation | result |
+|---|---|
+| current names (23:54), look down at VI 81 | night flip VI 136, nextBell -> 00:00, midnight VI 184, **scene change VI 206** |
+| new names (00:01), ACE before 17:54 | 17:36 bell rings with nextBell != 0 -> nextBell = 00:10 -> **never warps** |
+| new names, clock moved so ACE lands 17:54-18:00 | scene change VI 159, then **emulator hangs** (game stops producing frames) - likely title card still up during the scene change; needs a BizHawk check |
+| new names, ACE at night after the title card (first batch, 21-23h) | scene change VI 96, credits play normally |
+
+Among typeable `xori`/`sb` variants, 23:54 is already the latest pre-midnight time, so for a daytime ACE
+the current names are optimal within this payload shape.
