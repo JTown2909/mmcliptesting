@@ -83,3 +83,16 @@ Then hold Z + Up for 68 frames and press A.
 ## Superseded
 Setups A–D in the previous version used a scripted spin (A + stick from standstill) that differs
 from the console shield spin; they do not work with the console method.
+
+## No ESS, no diagonals (exhaustive to 6 moves)
+Turns limited to cardinal shield turns + spins in place (≤4 per turn); moves = sidehops, scoot,
+backflip, shield spins U/L/R, back-wall pin. Nothing exists with ≤4 moves; with 6 moves 575 setups
+pass the exact check, 14 of the top 61 clip in the emulator. Best (6 moves, 7 spins in place,
+3 shield spins, walk 44, `videos/game_counter_S5_noess_nodiag.mp4`):
+
+Tap L + SpinInPlace x1 | SidehopR | Tap L + SpinInPlace x1 | HSpinL | Tap L + SpinInPlace x2 | ScootFwd |
+Tap L + SpinInPlace x2 | Backflip | HSpinU | Tap L + SpinInPlace x1 | HSpinL | Tap U → hold Z+Up 48 frames, A.
+
+Without ESS the facing can only be adjusted in 0x1E0 steps (spin in place), so these are much slower
+than S4. A cardinal-only SE corner pin was tested and is not reliable (Link stops against the east
+wall instead of sliding to the corner for some facings).
