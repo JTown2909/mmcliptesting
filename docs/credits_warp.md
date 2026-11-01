@@ -97,3 +97,13 @@ Every working angle lands in the run of zero words (nops) in Link's data at Play
 leads into the yaw/parallelYaw jump. The angle must be a multiple of 4: an unaligned value (0x0A62)
 happened to work in mupen64plus, but real hardware raises an address error, so don't rely on it.
 These Player fields were zero in every savestate checked, but they are live game data.
+
+## Route constraint: ACE in the afternoon (WR finishes setup ~16:00)
+- With the `sb` + `CutsceneCmd_SetTime` payload, every reachable a2 (low byte F6, within +-0x8000 of the
+  patch byte, any register/opcode) was checked: **23:54 (the current names) is the only time >= 23:49**.
+  For a daytime ACE the current names are optimal; improving further needs a different payload type.
+- Jumping straight into En_Test4's own warp block is not viable: it loads play/this/player from its own
+  stack frame (0x54/0x50/0x4C(sp)), which doesn't exist when entered from a draw call.
+- **Look-down window** (daytime QuickSave6, ACE at VI 73): looking down at VI 81, 120 or 135 all give the
+  scene change at VI 206. At VI 145 -> 217 and VI 160 -> 232. The clock doesn't move during the night
+  card anyway, so there is ~60 VI (~1 s) after the ACE to look down at no cost.
