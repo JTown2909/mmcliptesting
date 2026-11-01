@@ -140,3 +140,11 @@ With the same facing and camera angle, an untargeted shield spin ends at a diffe
 on how long Link stood still first (FFA1 at 0–4 frames … FF51 after ≥ 90 frames; stable after that).
 Holding Z through the whole spin (Z, shield + direction, release shield, A one frame later) removes the
 dependence entirely (identical result for 0–150 frames of waiting) and keeps Link's facing.
+
+### Fewest steps, final run (earliest re-shield scoots, targeted shield spins)
+Sideways shield scoots now use the earliest re-shield (3-frame release; imbued's guano script waits
+for nonzero speed and so re-shields one frame later). Step-budget DFS with every move except
+untargeted spins:
+* without diagonals: nothing ≤ 8 steps; 9 steps: only imbued's setup (both orders) clips.
+* with diagonals: nothing ≤ 8 steps; 9 steps: only imbued's setup clips (two targeted-spin
+  candidates land 0.9 units off the clip line in the emulator).
