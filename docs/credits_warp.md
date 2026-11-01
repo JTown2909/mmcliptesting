@@ -166,3 +166,39 @@ game frame without snapping. Emulated with the stick steered 45° ahead of Link 
   wall snap with a suitable value mod 8).
 - 0814 ≡ 4 (mod 8) and every step is ≡ 0 (mod 8), so the base angle must be ≡ 4 (mod 8). 2CA3 and the
   camera (2CEB) are ≡ 3, while the explosion's 2E1C is ≡ 4. That's why the explosion is in the setup.
+
+## Full setup traced from the runner's movie (`.bk2`, daytime, from QuickSave2 to credits)
+Replayed with `tools/bk2replay.py --offset -1` (BizHawk logs one input row per VI; offset -1 stays in sync:
+same pot address, same A64 / 2CA3 / 2E1C / 0814 and the ACE all reproduce). `--heaplog` records every
+actor-heap allocation/free. Frames = game frames (20 fps); VI = 60 Hz from the movie start.
+
+### Heap manip: what each part does
+| frame (VI) | event | effect |
+|---|---|---|
+| 174-212 (507-621) | pots broken, items spawn and despawn | frees space around 0x80416A00-0x80416F00 |
+| 256-420 (753-1245) | two trips into the torch room and back | rooms load/unload; the heap reshuffles |
+| **443 (1314)** | **explosion 1**: its effect actor En_Clear_Tag (0x2E90 bytes) sits at 0x80416E90-0x80419D50 | while it exists, re-entering the pot room (frame 501) spawns the **target pot at node 0x80419EE0** (data 0x80419F10) instead of lower |
+| 513 (1524) | explosion 1 effect ends | that space is freed |
+| **777 (2316)** | **explosion 2**: En_Clear_Tag at 0x80414870 | the free block below the pot now starts exactly at **0x80417730** |
+| 796-808 (2373-2409) | carry the pot into the torch room | the new room loads 2 × En_Water_Effect, En_Light and 4 × Obj_Syokudai into 0x80417730+, leaving exactly **0x80 bytes free** in front of the pot; the old room unloads, so the **held pot is freed (SRM)** |
+| 854 (2547) | back in the pot room | **Obj_Moon_Stone spawns at node 0x80419E60** (the 0x80 gap + the freed pot), i.e. exactly 0x80 before the pot. The stale held pot writes Link's yaw to pot+0xBE = Moon Stone draw pointer + 2 |
+
+Requirement for any alternative manip: **Moon Stone instance = held-pot instance - 0x80** (with the Moon
+Stone code still loaded at 0x8040xxxx). Then recompute the names from the Moon Stone address
+(`find_time_payloads.py` takes a0 and the patch address as arguments).
+
+### Where the setup time goes: ESS rotations are done in bursts
+| turn | steps (0x708 each) | time in the movie | back-to-back minimum |
+|---|---|---|---|
+| pot drop 2AAC -> 0A64 (clockwise) | 41 | frames 996-1211 = **10.7 s** (bursts of ~10 steps, ~20-frame pauses) | 2.05 s |
+| 2CA3: fence angle D563 -> 2CA3 (clockwise), then Z sets parallelYaw | 24 | frames 1294-1404 = **5.5 s** | 1.2 s |
+| 0814: 2E1C -> 0814 (counterclockwise) | 31 | frames 1625-1725 = **5.0 s** | 1.55 s |
+
+That's 21.2 s of turning versus 4.8 s if every frame were a step. Link turns one step per frame as long
+as the stick direction stays more than one step (~9.9°) ahead and less than 180° ahead of him. So the
+stick can be swept faster than Link turns; the only real constraints are never letting it fall within
+~10° of Link (that causes a snap) and stopping on the right step. A realistic approach is a fast sweep for
+most of the turn, then slower single steps for the last few.
+
+Other waits seen: about 3.5 s between the bomb and the explosion hit (frames 1501-1571), and 2.7 s
+between the hit and starting the 0814 turn (frames 1571-1625).

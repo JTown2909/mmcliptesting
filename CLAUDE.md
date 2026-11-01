@@ -35,6 +35,8 @@ export DISPLAY=:99 SDL_AUDIODRIVER=dummy
 | `heapscan.py` | Walk the actor heap in a big-endian RDRAM dump; labels actors and their code overlays. |
 | `find_time_payloads.py` | Enumerate typeable `xori`/`sb` name pairs and the clock time each one sets. |
 | `actor_names.py` | Actor ID -> name table (from the decomp). |
+| `bk2replay.py` | Replay the runner's BizHawk `.bk2` movie in sync (`--offset -1`), print Link/ACE milestones, and `--heaplog` every heap alloc/free. |
+| `input_probe.py` | Play a scripted input list from a state and print each change to shape.rot.y / yaw / parallelYaw. |
 | `mm_ace_watch.lua` | BizHawk Lua heap viewer + Link angle watches, for the runner. |
 | `m64run.py`, `kzs.py` | Old: RDRAM dump at a frame from boot; kz-lite state decoder. |
 
@@ -92,9 +94,11 @@ input fires the ACE at game frame 73).
 ## Open directions
 - **Angle setups:** faster ways to reach a valid pot drop angle (any of 10), and 0814 / 2CA3
   (wall snap + ESS turns). The runner's setup videos show the current method.
-- **Heap setup:** which steps of the heap manip are actually needed to put Obj_Moon_Stone at 0x80419E90
-  (compare QuickSave2 -> 3 -> 4 heaps with `heapscan.py`).
-- **Name typing cost:** map the JP keyboard layout (`ovl_file_choose/z_file_nameset_JPN.c`) to choose,
-  among equivalent payloads, the one that is fastest to type.
+- **Heap setup:** mechanism traced from the movie (two timed explosions plus room loads; see
+  docs/credits_warp.md). Open: whether any step can be cut. That needs experiments the runner plays out
+  while checking the conditions with the Lua heap viewer.
+- **Turning time:** the movie spends 21 s on ESS turns whose back-to-back minimum is 4.8 s (see docs).
+- **Name typing cost:** not started. Note that the decomp's `z_file_nameset_JPN.c` actually contains the
+  English (NES) layout, so the JP keyboard must be read from the JP game itself.
 - **A different payload type** for an afternoon ACE (one that avoids the night card + midnight wait).
   Not yet worked out.
