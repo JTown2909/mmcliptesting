@@ -49,8 +49,12 @@ Example: test a name pair from a state:
 ```bash
 python3 tools/run_ace.py ROM.z64 QuickSave6.State --name1 0807BD233886AC66 --name2 0803B34FA0C6070D --frames 300
 ```
-Timing is in VI frames (60/s). "scene change" is the frame the credits scene load starts. Compare
-candidates against the **same state and the same input** (the default input fires the ACE at VI 73).
+`run_ace.py` prints both "frame" (emulator callback = one **game frame**, 20 fps in gameplay) and "VI"
+(real 60 Hz, from the game's VI counter at 0x80097B58). **Compare using VI.** "scene change" is when the
+credits scene load starts. Compare candidates against the same state and the same input (the default
+input fires the ACE at game frame 73).
+- Pitfall: the m64p frame callback is NOT per VI. Old numbers labelled "VI" in docs/credits_warp.md are
+  game frames (see the correction box at the top of that file).
 
 ## JP 1.0 facts (verified on the runner's states)
 - gSaveContext = 0x801EF460 (time +0x0C, isNight +0x10, day +0x18, playerName +0x2C = 0x801EF48C).
@@ -69,9 +73,9 @@ candidates against the **same state and the same input** (the default input fire
 
 ## Verified results (details in docs/credits_warp.md)
 - Afternoon ACE (the real route; WR finishes the setup around 16:00): current names `87Sはぁヲヴス` /
-  `83Iどバb5え` are optimal for the `sb` + `CutsceneCmd_SetTime` payload type. The runner has about 60 VI
-  after the ACE to look down at no cost.
-- Night ACE: `87SはぁヲBス` / `83Iどバb7え` set 00:01 and warp 23 VI after the ACE (runner confirmed in BizHawk).
+  `83Iどバb5え` are optimal for the `sb` + `CutsceneCmd_SetTime` payload type. The runner has about 3.1 s
+  (~186 VI) after the ACE to look down at no cost.
+- Night ACE: `87SはぁヲBス` / `83Iどバb7え` set 00:01; the scene change starts 69 VI (1.15 s) after the ACE, 2.8 s sooner than the current names (runner confirmed it works in BizHawk).
 - ACE in the 17:54-18:00 window with the night names: crashes (runner confirmed).
 - Pot drop angle: 0x0A50-0x0A74 in steps of 4 all work in emulation (it must be a multiple of 4).
 

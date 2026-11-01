@@ -2,7 +2,7 @@
 
 Example:
     sim = Sim(rom, input_so)
-    sim.run(script)   # script(sim, frame) called every VI; return False to stop
+    sim.run(script)   # script(sim, frame) called once per rendered game frame (20 fps in gameplay, NOT per VI; use sim.vi()); return False to stop
 BizHawk Mupen64Plus states: Core.bin (zstd-decompressed) minus its 4-byte prefix is a m64p state.
 """
 import ctypes as C, struct, os
@@ -54,6 +54,10 @@ class Sim:
         raw = bytes(self._ptr())
         w = struct.unpack("<%dI" % (len(raw) // 4), raw)
         return struct.pack(">%dI" % len(w), *w)
+
+    def vi(self):
+        """libultra VI retrace counter (JP 1.0): +1 per real 60 Hz VI, unlike the frame callback (once per game frame)."""
+        return self.r32(0x80097B58)
 
     def buttons(self, b): self.inp.script_set_buttons(C.c_uint32(b))
     def load_state(self, path): self.core.CoreDoCommand(10, 0, C.c_char_p(path.encode()))

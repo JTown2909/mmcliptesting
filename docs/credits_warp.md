@@ -1,5 +1,19 @@
 # JP 1.0 credits warp: how it works, and a faster payload
 
+> **Timing correction (read first).** Results below that say "VI" were measured with the emulator's frame
+> callback, which fires once per **game frame** (20 fps in gameplay = 3 real VIs), not once per VI.
+> Multiply those numbers by 3 for real 60 Hz VIs (more during scene loads). `tools/run_ace.py` now reads
+> the game's own VI counter (0x80097B58). Re-measured with real VIs:
+>
+> | case (ACE at the same moment) | ACE -> scene change |
+> |---|---|
+> | night state 6, current names, looking down 8 game frames after the ACE | 237 VI (3.95 s) |
+> | night state 6, new names `87SはぁヲBス` / `83Iどバb7え`, no look-down | **69 VI (1.15 s)**, saves 168 VI = **2.8 s** |
+> | daytime state 6 (17:38), current names, look down within 62 game frames of the ACE | 399 VI (6.65 s) |
+>
+> Daytime look-down window: looking down any time up to ~186 VI (**~3.1 s**) after the ACE costs nothing;
+> after that, each game frame late costs a game frame.
+
 All addresses JP 1.0, verified on the runner's BizHawk savestates (QuickSave1-7) and by
 emulating from QuickSave6 in mupen64plus (`tools/m64sim.py`).
 

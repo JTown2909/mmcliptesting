@@ -9,13 +9,15 @@ Options:
   --name2 HEX16      overwrite playing-file name bytes at 0x801EF48C (e.g. 0803B34FA0C6070D)
   --time HH:MM       set gSaveContext.save.time right after loading
   --drop HEX         force Moon Stone draw pointer to 0x8040<HEX> (pot drop angle test)
-  --lookdown VI      frame to push the stick the other way (stop the ACE); default never
-  --frames N         total VI frames to run (default 600)
-  --shot VI          take a screenshot at this frame (repeatable); saved under the core's screenshot dir
+  --lookdown FRAME      frame to push the stick the other way (stop the ACE); default never
+  --frames N         total game frames to run (default 600)
+  --shot FRAME          take a screenshot at this frame (repeatable); saved under the core's screenshot dir
 
-Input script: C-Up held VI 20-25, then stick (0,-80) = look up from VI 60.
+Times: "frame" = emulator callback = one game frame (20 fps in gameplay); "VI" = real 60 Hz VIs since
+frame 11, read from the game's VI counter. Compare candidates using VI.
+--lookdown is given in game frames. Input script: C-Up held frames 20-25, then stick (0,-80) = look up from frame 60.
 Printed events: ACE fired (En_Test4 patch byte became F6), En_Test4 daytimeIndex/nextBell changes,
-scene change (gSaveContext.save.entrance leaves 0x4C10 = observatory), and "alive" every 100 VI.
+scene change (gSaveContext.save.entrance leaves 0x4C10 = observatory), and "alive" every 100 frames.
 If "alive" stops, the game stopped producing frames (crash/hang).
 """
 import argparse, os, sys, tempfile
@@ -50,7 +52,9 @@ def main():
     sim = Sim(rom=a.rom, input_so=a.input_so)
     ev, last = {}, {}
     def note(k, n, msg):
-        if k not in ev: ev[k] = n; print(f"VI {n:5d} {msg}", flush=True)
+        if k not in ev:
+            vi = sim.vi() - ev.get("vi0", sim.vi()); ev[k] = n
+            print(f"frame {n:5d}  VI {vi:5d}  {msg}", flush=True)
 
     def script(s, n):
         if n == 2: s.load_state(state)
@@ -64,7 +68,8 @@ def main():
         elif 60 <= n < a.lookdown: s.buttons(stick(0, -80))
         elif n >= a.lookdown: s.buttons(stick(0, 80))
         else: s.buttons(0)
-        if n % 100 == 0: print(f"VI {n:5d} alive", flush=True)
+        if n == 11: ev["vi0"] = s.vi()
+        if n % 100 == 0: print(f"frame {n:5d} alive", flush=True)
         if n in a.shot: s.screenshot()
         if n > 10:
             t, ent = s.r16(SC + 0xC), s.r32(SC)
@@ -72,7 +77,7 @@ def main():
             if ent == OBSERVATORY_ENTRANCE:
                 dti, nb = s.r8(T4 + 0x144), s.r16(T4 + 0x148)
                 if (last.get("dti"), last.get("nb")) != (dti, nb):
-                    print(f"VI {n:5d} En_Test4 daytimeIdx={dti} nextBell={hours(nb)} time={hours(t)}", flush=True)
+                    print(f"frame {n:5d}  VI {s.vi() - ev.get('vi0', s.vi()):5d}  En_Test4 daytimeIdx={dti} nextBell={hours(nb)} time={hours(t)}", flush=True)
                     last.update(dti=dti, nb=nb)
             else:
                 note("ent", n, f"scene change, entrance {ent:04X}")
