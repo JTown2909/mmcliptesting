@@ -4,15 +4,28 @@ import sys, re; sys.path.insert(0, __import__('os').path.dirname(__file__))
 from prims import *
 
 # stick for camera-relative angle k*0x2000 (0=up, 0x4000=left, ...)
+N8 = dict(U=(0, 127), UL=(-90, 90), L=(-128, 0), DL=(-90, -90), D=(0, -128), DR=(90, -90), R=(127, 0), UR=(90, 90))
 NOTCH8 = [(0, 127), (-90, 90), (-128, 0), (-90, -90), (0, -128), (90, -90), (127, 0), (90, 90)]
 def do(g, a):
     a = a.strip()
     if not a: return
-    if "+" in a:
+    if "+" in a and not a.startswith("Tap"):
         for p in a.split("+"): do(g, p)
         return
     m = re.match(r"ESS ([LR])x(\d+)", a)
     if m: g.run(ess(int(m.group(2)), m.group(1) == "L")); return
+    if a.startswith("Tap") and "+" in a:
+        p, q = a.split("+", 1); do(g, p); do(g, q); return
+    m = re.match(r"Tap (\w+)", a)
+    if m:
+        sx, sy = N8[m.group(1)]
+        g.target_untarget_snap(); g.run([(1, 0, 0, 0), (1, 0, sx, sy)]); g.target_untarget_snap(); return
+    m = re.match(r"Spin(U|UL|L|DL|D|DR|R|UR)(t?)$", a)
+    if m:
+        sx, sy = N8[m.group(1)]
+        g.target_untarget_snap()
+        g.run([(21, 0, 0, 0)] + ([(1, 0, sx, sy)] if m.group(2) else []) + [(1, A, sx, sy), (20, R, sx, sy)])
+        g.target_untarget_snap(); return
     m = re.match(r"Card (\w+)", a)
     if m: cardinal(g, m.group(1)); return
     m = re.match(r"SpinInPlace x(\d+)", a)
