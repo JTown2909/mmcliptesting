@@ -124,3 +124,19 @@ Ranked by estimated time and step count (each guano scoot and each spin in place
 setup (9 steps, walk 59) is still first. The best new no-diagonal setup that clips:
 Tap R + ESS Rx6 | SidehopL | SpinInPlace x2 | SidehopL | GuanoL1 | SpinInPlace x2 | ScootFwd | Tap L + ESS Lx7
 (12 steps, walk 55). All verified setups: `verified_nodiag_setups.txt`.
+
+## Fewest steps (step = each ESS group, tap/shield turn, spin in place, guano scoot, or move)
+Step-budget DFS (`c/dfs.c`) over every setup within N steps, from the entry:
+* no diagonals, untargeted shield spins: nothing ≤ 8 steps; 9 steps: imbued's setup and
+  Tap L + ESS Rx3 | SidehopR | ESS Rx5 | GuanoR1 | Tap D + SpinInPlace x1 | HSpinL | ESS Lx3 (walk 49, clips
+  in the emulator, `videos/game_counter_S8_9step.mp4`) — but see the caveat below.
+* no diagonals, targeted shield spins (Z held): nothing ≤ 8; 9 steps: only imbued's setup.
+* with diagonals: nothing ≤ 8 steps.
+Guano scoots are modelled per 16-unit facing bin and are only approximate, so guano-based setups
+with ≤ 8 steps cannot be fully ruled out.
+
+### Untargeted shield spins depend on the wait before them
+With the same facing and camera angle, an untargeted shield spin ends at a different facing depending
+on how long Link stood still first (FFA1 at 0–4 frames … FF51 after ≥ 90 frames; stable after that).
+Holding Z through the whole spin (Z, shield + direction, release shield, A one frame later) removes the
+dependence entirely (identical result for 0–150 frames of waiting) and keeps Link's facing.
