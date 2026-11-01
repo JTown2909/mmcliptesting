@@ -58,3 +58,12 @@ ROM with the user's kz states (see `emu/`).
   So within these moves imbued's setup is the shortest; a faster one needs a cardinal turn
   mid-setup (4-pair space with cardinals is ~4.5e9 states, not yet searched) or other move types
   (hold deku spins, guano scoots, untargeted runs).
+
+### Extended moves (directional deku spins, cardinal/diagonal tap turns) — 4-pair search
+* The room has two camera regions split near x = -430; spins/taps behave differently in each.
+  Tables were measured in the east region (where the entry and clip are) and the search is
+  restricted to x > -420.
+* Exhaustive 4-pair search (171 turns × 18 moves per pair) → 3116 exact setups; the top 131 were
+  replayed in the emulator, 87 clip. imbued's setup is among them. Best: see cmg/COUNTER_SETUPS.md.
+* Directional spins: stick must go in on A's frame (or ≤1 frame after); shield timing irrelevant.
+  Tap turns must be exactly 1 frame (as with imbued's cardinal turn).
