@@ -36,3 +36,25 @@ ROM with the user's kz states (see `emu/`).
 * 130 deterministic anchors (ESS turns to notches + Z resets, depth 3) × 8 notches,
   A on every distinct frame within 40 units of the corner at speed ≥ 5
   (763 spin attempts): 0 clips.
+
+## Counter clip: exhaustive search with an exact simulator (cmg/)
+
+* Imbued's setup (https://github.com/imbued/Chest-Minigame-Deku-Clip) replays bit-exactly in the
+  emulator (`cmg/replay_imbued.py`) and clips.
+* `cmg/sim.py` reproduces Deku movement in fp32 bit-exactly (`pos += (speed*Math_SinS(a))*1.5`,
+  sine table read from RAM). Camera/cardinal tables for all 4096 facing bins measured in the
+  emulator (`gen_cam.py`), exact targeted camera near the clip approach (`gen_camexact.py`).
+  Clip oracle = exodus's grids + imbued's camera-creep model (`clipcheck.py`).
+* New exact reset: hold Z + the notch into the SE corner until Link stops, release the stick, then
+  Z: Link is at exactly (66, 134) with his facing unchanged, independent of hold length.
+  Z + Down from a facing of exactly 0 pins z = 134 with x unchanged.
+* Search results (BFS over (turn, move) pairs from the entry; turns = ESS ±1..8, cardinal
+  L/R/D, cardinal+ESS, spin-in-place; moves = hold sidehop L/R, shield scoot forward, hold
+  backflip, SE-corner pin, back-to-wall pin; final turn any of the above):
+  * up to 3 pairs, all turns, with and without pins: 0 setups (~15M distinct end states each)
+  * up to 5 pairs, ESS ≤ 4 taps, no cardinal mid-setup, with pins: 0 setups
+  * 4 pairs, ESS ≤ 8, no cardinal mid-setup, with pins: exactly 2 setups, both imbued's
+    (the video order and the alternate order).
+  So within these moves imbued's setup is the shortest; a faster one needs a cardinal turn
+  mid-setup (4-pair space with cardinals is ~4.5e9 states, not yet searched) or other move types
+  (hold deku spins, guano scoots, untargeted runs).
