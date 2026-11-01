@@ -31,16 +31,25 @@ static void *slurp(const char *dir, const char *name, long *n) {
 }
 typedef struct { double x, z; uint16_t a; int32_t par; int16_t t, m; } St;
 
-static int valid(double x, double z) { return x > -1666 && x < 66 && z > 134 && z < 797; }
+static int valid(double x, double z) { return x > -420 && x < 66 && z > 134 && z < 797; }
+static int inside(double x, double z, double m) { return x > -1680 + m && x < 80 - m && z > 120 + m && z < 811 - m; }
+static int32_t *turnkind;  /* 1 = starts with a tap turn (needs the settled camera clear of walls) */
 
 static inline int apply(const St *s, int t, int m, St *o) {
     uint16_t a2 = turns[(size_t)t * 65536 + s->a];
+    if (turnkind[t]) {
+        double ang = s->a * (2 * M_PI / 65536.0);
+        if (!inside(s->x - 70 * sin(ang), s->z - 70 * cos(ang), 15)) return 0;
+    }
     const MoveB *mb = &moves[(size_t)m * 4096 + (a2 >> 4)];
     if (!mb->valid) return 0;
     double x, z;
     if (movekind[m] == 1) { x = 66; z = 134; }
     else if (movekind[m] == 2) { x = s->x; z = 134; if (!((x > -346 && x < -114) || (x > -26 && x < 66))) return 0; }
-    else { x = s->x + mb->dx; z = s->z + mb->dz; }
+    else {
+        x = s->x + mb->dx; z = s->z + mb->dz;
+        if (movekind[m] == 3 && !(inside(s->x, s->z, 100) && inside(x, z, 100) && s->x > -320 && x > -320)) return 0;
+    }
     if (!valid(x, z)) return 0;
     o->x = x; o->z = z; o->a = mb->mode ? mb->ff : a2; o->t = t; o->m = m; return 1;
 }
@@ -73,6 +82,7 @@ int main(int argc, char **argv) {
         memcpy(&moves[i].mode, p + 16, 2); memcpy(&moves[i].ff, p + 18, 2); moves[i].valid = p[20];
     }
     long nk; int32_t *mk = slurp(dir, "movekind.bin", &nk); movekind = mk;
+    turnkind = slurp(dir, "turnkind.bin", &nk);
     finals = slurp(dir, "final.bin", &n);
     rays = slurp(dir, "rays.bin", &n); NR = n / sizeof(Ray);
     /* allowed turns per level: argv[6+level] = file of allowed turn indices, or "all" */

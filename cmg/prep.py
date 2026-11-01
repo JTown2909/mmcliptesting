@@ -31,12 +31,13 @@ for d in DIRS8:
     TURNS += [(f"Tap {d} + SpinInPlace x{n}", spn(tap, n)) for n in (1, 2)]
 TURNS += [(f"SpinInPlace x{n}", spn(A, n)) for n in (1, 2)]
 np.array([t for _, t in TURNS], dtype=np.uint16).tofile(OUT + "/turns.bin")
+np.array([1 if n.startswith("Tap") else 0 for n, _ in TURNS], dtype=np.int32).tofile(OUT + "/turnkind.bin")
 
 MNAMES = list(MT[0]["move"].keys()) + ["CornerSE", "BackWall"]
 kinds = []
 buf = bytearray()
 for name in MNAMES:
-    kinds.append(1 if name == "CornerSE" else 2 if name == "BackWall" else 0)
+    kinds.append(1 if name == "CornerSE" else 2 if name == "BackWall" else 3 if name.startswith("Spin") else 0)
     for b in range(4096):
         if name in ("CornerSE", "BackWall"):
             ok = 1 if name == "CornerSE" else int(camt[b] == 0 and b == 0)

@@ -51,7 +51,7 @@ def verify(actions, extra, verbose=True, g=None):
             x, y, z, f, c, m, s = g.st(); print(f"  {a:34s} x={x:.6f} z={z:.6f} facing={f:04X} cam={c:04X}")
     tr = []
     g.run(final_walk(extra) + [(20, 0, 0, 127)], tr)
-    ok = max(s[2] for s in tr) > 845
+    ok = any(s[2] > 845 and s[0] > -240 for s in tr)
     if verbose: print("  CLIP" if ok else "  no clip", [(round(s[0], 4), round(s[2], 4)) for s in tr[-30:-24]])
     return ok
 

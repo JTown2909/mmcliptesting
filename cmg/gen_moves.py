@@ -17,7 +17,7 @@ SPINS = [("U", False), ("L", False), ("R", False), ("UL", False), ("UR", False),
          ("L", True), ("R", True), ("D", True), ("UL", True), ("UR", True), ("DL", True), ("DR", True)]
 g = G(ROM); g.load(ENTRY); g.run([(4, 0, 0, 0)])
 for base_ in (LINK + 0x24, LINK + 0x108):  # move to the middle of the open floor so no move touches a wall
-    g.write(base_, struct.pack(">f", -700.0)); g.write(base_ + 8, struct.pack(">f", 465.0))
+    g.write(base_, struct.pack(">f", -180.0)); g.write(base_ + 8, struct.pack(">f", 470.0))
 g.run([(10, 0, 0, 0)])
 base = f"/dev/shm/_gm_base{part}.m64"; g.save(base)
 S = f"/dev/shm/_gm_s{part}.m64"
