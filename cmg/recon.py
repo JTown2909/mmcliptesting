@@ -43,7 +43,9 @@ seen = set()
 for line in open(D + "/hits.txt"):
     L, idx, par, t, m, ft, x, z, e = line.split()
     L, idx, par, t, m, ft = map(int, (L, idx, par, t, m, ft))
-    steps = path(L, idx) if idx >= 0 else path(L - 1, par) + [(t, m)]
+    if idx >= 0: steps = path(L, idx)
+    elif idx == -1: steps = path(L - 1, par) + [(t, m)]
+    else: steps = path(L - 2, par) + [(t // 64, t % 64), (m // 64, m % 64)]
     key = (tuple(steps), ft)
     if key in seen: continue
     seen.add(key)

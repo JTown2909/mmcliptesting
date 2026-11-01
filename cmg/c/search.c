@@ -102,6 +102,51 @@ int main(int argc, char **argv) {
         FILE *f = fopen(sp, "wb"); fwrite(cur, sizeof(St), ncur, f); fclose(f);
         final_check(&cur[0], L, 0);
         for (long i = 1; i < ncur; i++) final_check(&cur[i], L, i);
+        if (L == depth - 2 && depth >= 4) {
+            /* stream the last two levels: per stored state, children c3, then only (t,m) whose
+               resulting facing has a final turn (precomputed per facing) */
+            typedef struct { int16_t t; int8_t m; uint16_t ff; } E;
+            static E *lst; static int *off;
+            off = malloc(sizeof(int) * 65537); long tot = 0;
+            for (int pass = 0; pass < 2; pass++) {
+                tot = 0;
+                for (int a = 0; a < 65536; a++) {
+                    off[a] = tot;
+                    for (int t = 0; t < NT; t++) if (allowT[L + 1][t]) for (int m = 0; m < NM; m++) {
+                        if (movekind[m] == 1) continue;
+                        uint16_t a2 = turns[(size_t)t * 65536 + a];
+                        const MoveB *mb = &moves[(size_t)m * 4096 + (a2 >> 4)];
+                        if (!mb->valid) continue;
+                        uint16_t ff = mb->mode ? mb->ff : a2;
+                        if (finals[(size_t)ff * 16] < 0) continue;
+                        if (pass) { lst[tot].t = t; lst[tot].m = m; lst[tot].ff = ff; }
+                        tot++;
+                    }
+                }
+                off[65536] = tot;
+                if (!pass) lst = malloc(sizeof(E) * tot);
+            }
+            fprintf(stderr, "last-move lists: %ld entries (%.1f per facing)\n", tot, tot / 65536.0);
+            long done = 0;
+            #pragma omp parallel for schedule(dynamic, 16)
+            for (long i = 0; i < ncur; i++) {
+                St c3, c4;
+                for (int t = 0; t < NT; t++) if (allowT[L][t]) for (int m = 0; m < NM; m++) {
+                    if (!apply(&cur[i], t, m, &c3)) continue;
+                    if (c3.x < -420 || c3.x > 66) continue;
+                    for (int k = off[c3.a]; k < off[c3.a + 1]; k++) {
+                        if (!apply(&c3, lst[k].t, lst[k].m, &c4)) continue;
+                        if (c4.x < -246 || c4.x > -212) continue;
+                        c4.par = i; c4.t = t * 64 + m; c4.m = lst[k].t * 64 + lst[k].m;
+                        final_check(&c4, L + 2, -2);
+                    }
+                }
+                #pragma omp atomic
+                done++;
+                if (done % 20000 == 0) fprintf(stderr, "  %ld / %ld\n", done, ncur);
+            }
+            break;
+        }
         if (L == depth - 1) {
             /* last level: stream children through the final check without storing them */
             #pragma omp parallel for schedule(dynamic, 64)
