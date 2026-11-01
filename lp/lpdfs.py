@@ -7,6 +7,7 @@ H8 = dict(U=(0, 80), UL=(-69, 69), L=(-80, 0), DL=(-69, -69), D=(0, -80), DR=(69
 TURNS = [f"ESS {d}x{k}" for d in "LR" for k in range(1, 9)] + [f"Tap {d}" for d in H8] + ["SpinInPlace x1"]
 MOVES = ["SidehopL", "SidehopR", "ScootFwd", "Backflip", "ZSpinU", "ZSpinL", "ZSpinR", "ScootL1", "ScootR1"] + [f"Pin {d}" for d in H8]
 STEPS = TURNS + MOVES
+FIRST = [x for x in os.environ.get("FIRST", "").split(",") if x]
 BOX = (-1441.0, -1432.0, 360.0, 392.0)
 g = G(ROM); g.load(LP); g.run([(2, 0, 0, 0)])
 pid = os.getpid(); stk = [f"/dev/shm/_ld{pid}_{i}.m64" for i in range(DEPTH + 3)]
@@ -48,7 +49,7 @@ def dfs(path, d, prev):
     if d == DEPTH: return
     for a in STEPS:
         if not allowed(prev, a): continue
-        if d == 0 and STEPS.index(a) % nparts != part: continue
+        if d == 0 and (a not in FIRST if FIRST else STEPS.index(a) % nparts != part): continue
         g.load(stk[d])
         if not step(a): continue
         x, y, z, f = g.pos()
