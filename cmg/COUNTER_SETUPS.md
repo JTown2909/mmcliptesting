@@ -61,7 +61,7 @@ Then hold Z + Up for 51 frames and press A.
 
 Then hold Z + Up for 52 frames and press A.
 
-## S4 — 9 ESS taps, 2 in-place spins, no shield spins, walk 64 (`videos/game_counter_S4_9ess_nospin.mp4`)
+## S4 — 9 ESS taps, 2 in-place spins, no shield spins, walk 64 (`videos/game_counter_S4_9ess_nospin.mp4`) — **confirmed on console**
 
 | step | x | z | facing |
 |---|---|---|---|
