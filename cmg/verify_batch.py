@@ -1,11 +1,12 @@
 """Emulator-verify action lists (one per line on stdin, 'A | B | ...'): run the setup, then try every
+import os
 walk length the clip oracle allows from the emulator's actual end state (±2)."""
 import sys, re; sys.path.insert(0, ".")
 from verify import *
 from clipcheck import APPROACH, candidates
 import numpy as np
 g = G(ROM)
-tmp = "/dev/shm/_vb.m64"
+tmp = "/dev/shm/_vb%d.m64" % os.getpid()
 for line in sys.stdin:
     line = line.strip()
     if not line: continue
