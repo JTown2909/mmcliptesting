@@ -39,3 +39,25 @@ Tap L + ESS Lx4 | Backflip | ESS Lx1 | Spin Rt | Tap D | Spin Lt | ESS Lx6 | Sco
 See `verified_setups.txt` for all 87 verified setups with ESS/tap/spin counts.
 Time estimates use guessed per-input costs (ESS group 0.6 s + 0.25 s/tap, tap turn 1.2 s,
 in-place spin 1.3 s, spin/sidehop/scoot/backflip ~0.6–1.3 s, walk at 20 fps) and are only for ranking.
+
+### C — 2 ESS taps, walk 30
+Tap D | Backflip | Tap UR | Spin Dt | Tap UR + ESS Lx1 | ScootFwd | Tap D + SpinInPlace x1 | Spin R | Tap UL + ESS Lx1
+
+### D — 1 ESS tap, walk 48
+Tap UL + SpinInPlace x1 | ScootFwd | Tap L + SpinInPlace x1 | Backflip | SidehopR | Tap DL + ESS Lx1 | Spin U | Tap L + SpinInPlace x2
+
+## Videos (`videos/`)
+Top-down replays from the emulator (exact per-frame position, facing and camera over the room's
+wall geometry, current step labelled): `counter_setupA.mp4`, `counter_setupB.mp4`,
+`counter_setupC_2ess.mp4`, `counter_setupD_1ess.mp4`, and `counter_imbued.mp4` for comparison.
+Frame counts in these videos include the scripted camera-settle waits from imbued's lua
+procedures, so they are not a measure of human execution time.
+
+## Shield-method caveat (needs checking on console)
+In the emulator, holding R as Deku does not turn Link; after R is released with the stick held,
+Link turns 2 frames later and starts walking on the 3rd. A spin started by "prehold direction with
+shield, release shield + A" does **not** land on the same position as the scripted spin (A + stick
+from standstill, camera settled): the result changes with the number of frames between the R
+release and A (tested 1–4 frames, all different, none equal to the scripted spin). Tap turns done
+via shield give the same facing as the 1-frame flick as long as the stick is released before Link
+starts walking.
