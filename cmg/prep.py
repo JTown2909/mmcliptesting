@@ -28,20 +28,24 @@ for f in glob.glob(SP + "/camexact_*.csv"):
 DIRS8 = ["U", "UL", "L", "DL", "D", "DR", "R", "UR"]
 A = np.arange(65536)
 TURNS = [("", A.copy())]
-ks = [k for k in range(-8, 9) if k]
+CARD_ONLY = bool(os.environ.get("CARD_ONLY"))   # no ESS, no diagonal taps/spins/pins
+ks = [] if CARD_ONLY else [k for k in range(-8, 9) if k]
+MAXSIP = 4 if CARD_ONLY else 2
 ess = lambda a, k: (a + k * 0x708) & 0xFFFF
 spn = lambda a, n: (a - n * 0x1E0) & 0xFFFF
 TURNS += [(f"ESS {'L' if k > 0 else 'R'}x{abs(k)}", ess(A, k)) for k in ks]
-for d in DIRS8:
+for d in (["U", "L", "D", "R"] if CARD_ONLY else DIRS8):
     tap = np.array([MT[b]["turn"][d][0] for b in range(4096)])[A >> 4]
     TURNS.append((f"Tap {d}", tap))
     TURNS += [(f"Tap {d} + ESS {'L' if k > 0 else 'R'}x{abs(k)}", ess(tap, k)) for k in ks]
-    TURNS += [(f"Tap {d} + SpinInPlace x{n}", spn(tap, n)) for n in (1, 2)]
-TURNS += [(f"SpinInPlace x{n}", spn(A, n)) for n in (1, 2)]
+    TURNS += [(f"Tap {d} + SpinInPlace x{n}", spn(tap, n)) for n in range(1, MAXSIP + 1)]
+TURNS += [(f"SpinInPlace x{n}", spn(A, n)) for n in range(1, MAXSIP + 1)]
 np.array([t for _, t in TURNS], dtype=np.uint16).tofile(OUT + "/turns.bin")
 np.array([1 if n.startswith("Tap") else 0 for n, _ in TURNS], dtype=np.int32).tofile(OUT + "/turnkind.bin")
 
 MNAMES = list(MT[0]["move"].keys()) + ["CornerSE", "BackWall"]
+if CARD_ONLY: MNAMES = [m for m in MNAMES if m not in ("CornerSE",) and not any(m.endswith(d) for d in ("UL", "UR", "DL", "DR")) and m not in ("HSpinD", "SpinD", "SpinDt")]
+if os.environ.get("HSPIN"): MNAMES = [m for m in MNAMES if not m.startswith("Spin") or m.startswith("SpinInPlace")]
 kinds = []
 buf = bytearray()
 for name in MNAMES:
