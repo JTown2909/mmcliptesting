@@ -1,3 +1,11 @@
 __pycache__/
 *.z64
 *.kzs
+*.State
+*.st
+*.rdram
+*.bin
+*.so
+*.n64
+*.v64
+*.mp4
