@@ -21,6 +21,15 @@ def do(g, a):
     if m:
         sx, sy = N8[m.group(1)]
         g.target_untarget_snap(); g.run([(1, 0, 0, 0), (1, 0, sx, sy)]); g.target_untarget_snap(); return
+    m = re.match(r"Guano([LR])(\d)$", a)
+    if m:  # imbued's guano shield scoot chain, chain reset first
+        sx = -80 if m.group(1) == "L" else 80
+        g.target_untarget_snap(); g.run([(6, 0, 0, 0), (6, Z, 0, 0)])
+        for _ in range(int(m.group(2))):
+            g.run([(10, Z | R, sx, 0)]); k = 0
+            while g.f32(LINK + 0x70) == 0 and k < 12: g.run([(1, Z, sx, 0)]); k += 1
+            g.run([(3, Z | R, sx, 0), (1, Z | R, 0, 0)])
+        g.run([(10, 0, 0, 0)]); return
     m = re.match(r"HSpin(U|UL|L|DL|D|DR|R|UR)$", a)
     if m:  # console method: shield, hold direction, release shield, A one frame later, re-shield
         sx, sy = H8[m.group(1)]

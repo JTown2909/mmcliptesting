@@ -19,6 +19,10 @@ if HSPIN:
             mv = MT[r["a"] >> 4]["move"]
             for k in [k for k in mv if k.startswith("Spin")]: del mv[k]
             mv.update(r["move"])
+if os.environ.get("GUANO"):
+    for f in glob.glob(SP + "/guano_*.jsonl"):
+        for line in open(f):
+            r = json.loads(line); MT[r["a"] >> 4]["move"].update(r["move"])
 camt = np.array([MT[b]["camt"] for b in range(4096)])
 camx = {}
 for f in glob.glob(SP + "/camexact_*.csv"):

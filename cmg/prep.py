@@ -18,6 +18,10 @@ if HSPIN:
             mv = MT[r["a"] >> 4]["move"]
             for k in [k for k in mv if k.startswith("Spin")]: del mv[k]
             mv.update(r["move"])
+if os.environ.get("GUANO"):
+    for f in glob.glob(SP + "/guano_*.jsonl"):
+        for line in open(f):
+            r = json.loads(line); MT[r["a"] >> 4]["move"].update(r["move"])
 assert len(MT) == 4096, len(MT)
 camt = np.array([MT[b]["camt"] for b in range(4096)])
 camx = np.full(65536, -1, np.int64)
@@ -29,7 +33,7 @@ DIRS8 = ["U", "UL", "L", "DL", "D", "DR", "R", "UR"]
 A = np.arange(65536)
 TURNS = [("", A.copy())]
 CARD_ONLY = bool(os.environ.get("CARD_ONLY"))   # no ESS, no diagonal taps/spins/pins
-ks = [] if CARD_ONLY else [k for k in range(-8, 9) if k]
+ks = [] if CARD_ONLY and not os.environ.get("ESS_ONCE") else [k for k in range(-8, 9) if k]
 MAXSIP = 4 if CARD_ONLY else 2
 ess = lambda a, k: (a + k * 0x708) & 0xFFFF
 spn = lambda a, n: (a - n * 0x1E0) & 0xFFFF
@@ -41,7 +45,7 @@ for d in (["U", "L", "D", "R"] if CARD_ONLY else DIRS8):
     TURNS += [(f"Tap {d} + SpinInPlace x{n}", spn(tap, n)) for n in range(1, MAXSIP + 1)]
 TURNS += [(f"SpinInPlace x{n}", spn(A, n)) for n in range(1, MAXSIP + 1)]
 np.array([t for _, t in TURNS], dtype=np.uint16).tofile(OUT + "/turns.bin")
-np.array([1 if n.startswith("Tap") else 0 for n, _ in TURNS], dtype=np.int32).tofile(OUT + "/turnkind.bin")
+np.array([(1 if n.startswith("Tap") else 0) | (2 if "ESS" in n else 0) for n, _ in TURNS], dtype=np.int32).tofile(OUT + "/turnkind.bin")
 
 MNAMES = list(MT[0]["move"].keys()) + ["CornerSE", "BackWall"]
 if CARD_ONLY: MNAMES = [m for m in MNAMES if m not in ("CornerSE",) and not any(m.endswith(d) for d in ("UL", "UR", "DL", "DR")) and m not in ("HSpinD", "SpinD", "SpinDt")]
@@ -56,7 +60,7 @@ for name in MNAMES:
             buf += struct.pack("<ddHHB", 0.0, 0.0, 0, 0, ok); continue
         fr, ff = MT[b]["move"][name]
         dx = sum(d[2] for d in fr); dz = sum(d[3] for d in fr)
-        keep = name in ("SidehopL", "SidehopR", "ScootFwd", "Backflip")
+        keep = name in ("SidehopL", "SidehopR", "ScootFwd", "Backflip") or name.startswith("Guano")
         buf += struct.pack("<ddHHB", dx, dz, 0 if keep else 1, ff, 1)
 open(OUT + "/moves.bin", "wb").write(buf)
 np.array(kinds, dtype=np.int32).tofile(OUT + "/movekind.bin")

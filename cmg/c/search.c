@@ -29,7 +29,7 @@ static void *slurp(const char *dir, const char *name, long *n) {
     fseek(f, 0, SEEK_END); *n = ftell(f); fseek(f, 0, SEEK_SET);
     void *b = malloc(*n); if (fread(b, 1, *n, f) != (size_t)*n) exit(2); fclose(f); return b;
 }
-typedef struct { double x, z; uint16_t a; int32_t par; int16_t t, m; } St;
+typedef struct { double x, z; uint16_t a; int32_t par; int16_t t, m; uint8_t ess; } St;
 
 static int valid(double x, double z) { return x > -420 && x < 66 && z > 134 && z < 797; }
 static int inside(double x, double z, double m) { return x > -1680 + m && x < 80 - m && z > 120 + m && z < 811 - m; }
@@ -37,7 +37,8 @@ static int32_t *turnkind;  /* 1 = starts with a tap turn (needs the settled came
 
 static inline int apply(const St *s, int t, int m, St *o) {
     uint16_t a2 = turns[(size_t)t * 65536 + s->a];
-    if (turnkind[t]) {
+    if (turnkind[t] & 2) { if (s->ess) return 0; o->ess = 1; } else o->ess = s->ess;
+    if (turnkind[t] & 1) {
         double ang = s->a * (2 * M_PI / 65536.0);
         if (!inside(s->x - 70 * sin(ang), s->z - 70 * cos(ang), 15)) return 0;
     }
@@ -58,6 +59,7 @@ static long nhits;
 static void final_check(const St *s, int level, long idx) {
     const int16_t *fl = &finals[(size_t)s->a * 16];
     for (int k = 0; k < 8 && fl[2 * k] >= 0; k++) {
+        if ((turnkind[fl[2 * k]] & 2) && s->ess) continue;
         const Ray *r = &rays[fl[2 * k + 1]];
         double dx = r->cx - s->x - 12 * r->s8, dz = r->cz - s->z - 12 * r->c8;
         double t = dx * r->sw + dz * r->cw;
@@ -95,7 +97,7 @@ int main(int argc, char **argv) {
     char op[512]; snprintf(op, sizeof op, "%s/hits.txt", dir); out = fopen(op, "w");
     fprintf(stderr, "NT=%d NM=%d NR=%d\n", NT, NM, NR);
     St *cur = malloc(sizeof(St)); cur[0].x = atof(argv[3]); cur[0].z = atof(argv[4]); cur[0].a = atoi(argv[5]);
-    cur[0].par = -1; cur[0].t = -1; cur[0].m = -1;
+    cur[0].par = -1; cur[0].t = -1; cur[0].m = -1; cur[0].ess = 0;
     long ncur = 1;
     for (int L = 0; L < depth; L++) {
         char sp[512]; snprintf(sp, sizeof sp, "%s/level%d.bin", dir, L);
@@ -169,7 +171,7 @@ int main(int argc, char **argv) {
         /* dedup by (quantised x, z, facing) */
         typedef struct { int64_t k1, k2; long i; } K;
         K *ks = malloc(sizeof(K) * nn);
-        for (long i = 0; i < nn; i++) { ks[i].k1 = llrint(nxt[i].x * 1e5) * 65536 + nxt[i].a; ks[i].k2 = llrint(nxt[i].z * 1e5); ks[i].i = i; }
+        for (long i = 0; i < nn; i++) { ks[i].k1 = llrint(nxt[i].x * 1e5) * 65536 + nxt[i].a; ks[i].k2 = llrint(nxt[i].z * 1e5) * 2 + nxt[i].ess; ks[i].i = i; }
         int cmp(const void *A, const void *B) { const K *a = A, *b = B; if (a->k1 != b->k1) return a->k1 < b->k1 ? -1 : 1; if (a->k2 != b->k2) return a->k2 < b->k2 ? -1 : 1; return a->i < b->i ? -1 : a->i > b->i; }
         qsort(ks, nn, sizeof(K), cmp);
         St *ded = malloc(sizeof(St) * nn); long nd = 0;
