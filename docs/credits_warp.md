@@ -153,3 +153,16 @@ Z-targeting into empty space left the camera at 2CAB. The bomb knockback sets ya
 touching parallelYaw (2CA3)**, which moves Link into the right class for 0814. (Inferred from the
 arithmetic; the runner should confirm.) An attempt to plan 2E1C -> 0814 frame-exactly in first person
 overshot because of the turn acceleration.
+
+### ESS rotation (runner's method) - confirmed
+Rotating the stick through the ESS range keeps the target ahead of Link, so he turns exactly 0x708 per
+game frame without snapping. Emulated with the stick steered 45° ahead of Link each frame:
+- Pot drop: from 2AAC (daytime QuickSave4), **41 steps clockwise -> 0A64** (2AAC - 41 × 0x708 mod 0x10000).
+- 0814: from 2E1C (night QuickSave5), **31 steps counterclockwise -> 0814**, parallelYaw stays 2CA3.
+- A search over one optional snap to an ESS cardinal (camera 2AAB at the drop, 2CEB at 0814) plus
+  n steps either way finds nothing shorter. The 0x708 grid from 2AAC only reaches A64 among the 10
+  valid drop angles. One step per game frame is the maximum turn rate, so both turns are already
+  optimal from these starting angles. Shorter turns would need a different starting angle (another
+  wall snap with a suitable value mod 8).
+- 0814 ≡ 4 (mod 8) and every step is ≡ 0 (mod 8), so the base angle must be ≡ 4 (mod 8). 2CA3 and the
+  camera (2CEB) are ≡ 3, while the explosion's 2E1C is ≡ 4. That's why the explosion is in the setup.
