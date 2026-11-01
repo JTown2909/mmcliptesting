@@ -30,6 +30,12 @@ def do(g, a):
             while g.f32(LINK + 0x70) == 0 and k < 12: g.run([(1, Z, sx, 0)]); k += 1
             g.run([(3, Z | R, sx, 0), (1, Z | R, 0, 0)])
         g.run([(10, 0, 0, 0)]); return
+    m = re.match(r"ZSpin(U|L|R)$", a)
+    if m:  # targeted shield spin: hold Z throughout, shield + direction, release shield, A one frame later
+        sx, sy = H8[m.group(1)]
+        g.target_untarget_snap()
+        g.run([(6, Z, 0, 0), (4, R | Z, 0, 0), (8, R | Z, sx, sy), (1, Z, sx, sy), (1, A | Z, sx, sy), (8, Z, sx, sy), (25, R | Z, sx, sy), (10, R, 0, 0), (12, 0, 0, 0)])
+        g.target_untarget_snap(); return
     m = re.match(r"HSpin(U|UL|L|DL|D|DR|R|UR)$", a)
     if m:  # console method: shield, hold direction, release shield, A one frame later, re-shield
         sx, sy = H8[m.group(1)]

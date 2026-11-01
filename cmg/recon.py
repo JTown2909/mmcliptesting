@@ -19,6 +19,12 @@ if HSPIN:
             mv = MT[r["a"] >> 4]["move"]
             for k in [k for k in mv if k.startswith("Spin")]: del mv[k]
             mv.update(r["move"])
+if os.environ.get("ZSPIN"):
+    for f in glob.glob(SP + "/zspin_*.jsonl"):
+        for line in open(f):
+            r = json.loads(line); mv = MT[r["a"] >> 4]["move"]
+            for k in [k for k in mv if k.startswith("HSpin")]: del mv[k]
+            mv.update(r["move"])
 if os.environ.get("GUANO"):
     for f in glob.glob(SP + "/guano_*.jsonl"):
         for line in open(f):

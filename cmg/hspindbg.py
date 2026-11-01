@@ -1,0 +1,16 @@
+import sys, struct; sys.path.insert(0, ".")
+from verify import *
+g = G(ROM)
+pre = "ESS Lx8|SidehopR|ESS Lx7|ScootFwd|ESS Lx7|SidehopL|ScootFwd".split("|")
+g.load(ENTRY); g.run([(6, 0, 0, 0)])
+for a in pre: do(g, a.strip())
+x0, _, z0, f0 = g.pos(); print(f"pre-spin ({x0:.4f},{z0:.4f}) facing {f0:04X} cam {g.cam():04X}")
+g.save("/dev/shm/_hd.m64")
+do(g, "HSpinL"); x, _, z, f = g.pos(); print(f"in place: d=({x-x0:.4f},{z-z0:.4f}) end {f:04X}")
+def seth(a, v): g.write(a, struct.pack(">H", v & 0xFFFF))
+for (tx, tz) in [(-180, 470), (-235.69, 434.19), (-150, 434), (-300, 434), (-235, 500)]:
+    g.load("/dev/shm/_hd.m64")
+    for b_ in (LINK + 0x24, LINK + 0x108): g.write(b_, struct.pack(">f", tx)); g.write(b_ + 8, struct.pack(">f", tz))
+    g.run([(10, 0, 0, 0)])
+    x0, _, z0, _ = g.pos(); do(g, "HSpinL"); x, _, z, f = g.pos()
+    print(f"teleported to ({tx},{tz}): d=({x-x0:.4f},{z-z0:.4f}) end {f:04X}")

@@ -18,6 +18,12 @@ if HSPIN:
             mv = MT[r["a"] >> 4]["move"]
             for k in [k for k in mv if k.startswith("Spin")]: del mv[k]
             mv.update(r["move"])
+if os.environ.get("ZSPIN"):
+    for f in glob.glob(SP + "/zspin_*.jsonl"):
+        for line in open(f):
+            r = json.loads(line); mv = MT[r["a"] >> 4]["move"]
+            for k in [k for k in mv if k.startswith("HSpin")]: del mv[k]
+            mv.update(r["move"])
 if os.environ.get("GUANO"):
     for f in glob.glob(SP + "/guano_*.jsonl"):
         for line in open(f):
@@ -53,14 +59,14 @@ if os.environ.get("HSPIN"): MNAMES = [m for m in MNAMES if not m.startswith("Spi
 kinds = []
 buf = bytearray()
 for name in MNAMES:
-    kinds.append(1 if name == "CornerSE" else 2 if name == "BackWall" else 3 if name.startswith(("Spin", "HSpin")) else 0)
+    kinds.append(1 if name == "CornerSE" else 2 if name == "BackWall" else 3 if name.startswith(("Spin", "HSpin", "ZSpin")) else 0)
     for b in range(4096):
         if name in ("CornerSE", "BackWall"):
             ok = 1 if name == "CornerSE" else int(camt[b] == 0 and b == 0)
             buf += struct.pack("<ddHHB", 0.0, 0.0, 0, 0, ok); continue
         fr, ff = MT[b]["move"][name]
         dx = sum(d[2] for d in fr); dz = sum(d[3] for d in fr)
-        keep = name in ("SidehopL", "SidehopR", "ScootFwd", "Backflip") or name.startswith("Guano")
+        keep = name in ("SidehopL", "SidehopR", "ScootFwd", "Backflip") or name.startswith(("Guano", "ZSpin"))
         buf += struct.pack("<ddHHB", dx, dz, 0 if keep else 1, ff, 1)
 open(OUT + "/moves.bin", "wb").write(buf)
 np.array(kinds, dtype=np.int32).tofile(OUT + "/movekind.bin")
