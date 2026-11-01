@@ -243,3 +243,30 @@ explosions, bombs), ending with the Moon Stone at node 0x80419E60.
   result. With the pots alive, their code is still loaded when the torch room first loads, so the torch
   room's pots don't allocate it again and everything shifts (target pot 0x80419F40, not 0x80419EE0). The
   runner reports the setup still works without the pot breaking. A movie of that variant is needed to settle it.
+
+## New setup: parallelYaw 2CA1 (instead of 2CA3), then yaw 0814
+**Why 2CA3 can't simply become 2CA1:** ESS steps are 0x708 (≡ 0 mod 8), so they never change an angle mod 8.
+The fence snap D563 ≡ 3 (mod 8) like 2CA3, but 2CA1 ≡ 1. The fix is a camera snap: tap Z (the camera
+re-centres behind Link), then ESS up, and Link snaps to a camera-favoured angle that is 2 lower.
+
+**Routes from the fence snap (D563), verified in emulation** (from the movie, frame 1268, right after the fence Z;
+`tools/ess_plan_test.py`). parallelYaw ends at exactly 2CA1 whether the wait after Z is 6, 15 or 30 frames:
+| route | inputs | steps |
+|---|---|---|
+| **A** | ESS right ×12 (-> 8103) · tap Z · ESS up (-> 8101) · ESS right ×12 (-> 2CA1) · Z | 24 + Z + ESS up |
+| **B** | ESS right ×25 (-> 259B) · tap Z · ESS up (-> 2599) · ESS left ×1 (-> 2CA1) · Z | 26 + Z + ESS up |
+(The current route is ESS right ×24 -> 2CA3 · Z.) ESS up **without** a Z tap first doesn't work: the camera
+doesn't follow Link during ESS turns, so Link snaps back toward the old camera direction (D567).
+
+**Other wall-snap angles in the basement** (runner-measured: D563, 5554, 2AAC, D4D1, 1526, 54D1, 0000, D554,
+5572; all of them also come out of the collision data with the exact game atan, `tools/mm_atan.py`): searched with
+`tools/angle_search.py` (motion model from rylieb/mm-angle-finder). None beat the fence. The next best are
+D554 (ESS right ×4 · Z+ESS up · ESS right ×8 · Z+ESS up · ESS right ×12) and D4D1. The rest need many camera snaps or C-up.
+
+**0814 afterwards is unchanged.** The movie was replayed with Link's angles and parallelYaw set to 2CA1 just after
+the fence Z (frame 1422). The runner's own bomb inputs still produce the knockback yaw **2E1C**, the recorded
+31 counterclockwise ESS steps still reach **0814**, and parallelYaw stays **2CA1**. (With the old file names
+the ACE then jumps to 0x8050B284 and hits the "ZELDA3" header bytes, as expected for the new setup's
+different target.) No explosion-free alternative exists: after parallelYaw is set, only par-preserving
+moves (ESS steps ≡ 0 mod 8, C-up ±0x3C0) are allowed, and a Z re-centre would overwrite parallelYaw, so
+nothing but the knockback can move yaw from ≡ 1 to ≡ 4 (mod 8).

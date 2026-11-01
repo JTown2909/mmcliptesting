@@ -39,6 +39,8 @@ def main():
     ap.add_argument("--heaplog")
     ap.add_argument("--dump", type=int, action="append", default=[], help="write big-endian RDRAM at this game frame (repeatable)")
     ap.add_argument("--dumpdir", default=".")
+    ap.add_argument("--patch16", action="append", default=[], help="FRAME:ADDR:VALUE - write a u16 at that game frame (hex addr/value)")
+    ap.add_argument("--savestate", type=int, action="append", default=[], help="save an m64p state at this game frame (repeatable)")
     a = ap.parse_args()
     rows, stpath = parse(a.movie)
     sim = Sim(rom=a.rom, input_so=os.path.join(os.path.dirname(os.path.abspath(__file__)), "scriptinput", "scriptinput.so"))
@@ -76,6 +78,11 @@ def main():
             print(f"frame {n:5d} VI {vi:5d} held={held:08X} shape={sh:04X} yaw={yw:04X} par={par:04X} "
                   f"moonDraw={md:08X} patch={pb:02X} entr={ent:04X}", flush=True)
             st["last"] = snap
+        for p in a.patch16:
+            pf, pa, pv = p.split(":")
+            if n == int(pf): s.w16(int(pa, 16), int(pv, 16))
+        if n in a.savestate:
+            s.save_state(os.path.join(a.dumpdir, f"frame{n}.st"))
         if n in a.dump:
             open(os.path.join(a.dumpdir, f"frame{n}.rdram"), "wb").write(s.dump())
         if hl and n % 1 == 0:

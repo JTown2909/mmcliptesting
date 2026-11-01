@@ -61,6 +61,7 @@ class Sim:
 
     def buttons(self, b): self.inp.script_set_buttons(C.c_uint32(b))
     def load_state(self, path): self.core.CoreDoCommand(10, 0, C.c_char_p(path.encode()))
+    def save_state(self, path): self.core.CoreDoCommand(11, 1, C.c_char_p(path.encode()))   # 1 = m64p format
     def screenshot(self): self.core.CoreDoCommand(16, 0, None)
     def stop(self): self.core.CoreDoCommand(6, 0, None)
 

@@ -41,6 +41,9 @@ export DISPLAY=:99 SDL_AUDIODRIVER=dummy
 | `route_check.py` | Replays the movie's heap events in the simulator and compares with real snapshots (all match). |
 | `route_search.py` | Searches setup variants in the simulator. |
 | `romfiles.py` | ROM dmadata + Yaz0 reader (room actor lists). |
+| `angle_search.py` | Shortest ESS / ESS-up / C-up sequences between angles (needs a clone of rylieb/mm-angle-finder for its motion model). |
+| `ess_plan_test.py` | Executes an ESS plan (rotate to angle, Z + ESS up, Z) in the emulator and reports shape/yaw/parallelYaw. |
+| `mm_atan.py` | Bit-exact game atan2 + wall-snap angle from a collision normal. |
 | `mm_ace_watch.lua` | BizHawk Lua heap viewer + Link angle watches, for the runner. |
 | `m64run.py`, `kzs.py` | Old: RDRAM dump at a frame from boot; kz-lite state decoder. |
 
@@ -94,6 +97,11 @@ input fires the ACE at game frame 73).
    to try it in BizHawk. Emulator behaviour can differ from real hardware: mupen64plus accepted an
    unaligned jump that hardware would reject.
 5. Record every result, good or bad, in `docs/credits_warp.md`.
+
+## Angle facts
+- Wall snap (Z at a wall): shape = Math_Atan2S(normal.x, normal.z) + 0x8000 (exact in `mm_atan.py`).
+- ESS up only snaps to the camera-favoured angle after a Z tap re-centres the camera; ESS turns don't move the camera.
+- parallelYaw is set by Z; ESS turns, ESS up and C-up don't change it.
 
 ## Open directions
 - **Angle setups:** faster ways to reach a valid pot drop angle (any of 10), and 0814 / 2CA3
