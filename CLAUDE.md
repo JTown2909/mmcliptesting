@@ -95,7 +95,7 @@ input fires the ACE at game frame 73).
 - **Angle setups:** faster ways to reach a valid pot drop angle (any of 10), and 0814 / 2CA3
   (wall snap + ESS turns). The runner's setup videos show the current method.
 - **Heap setup:** mechanism traced from the movie (two timed explosions plus room loads; see
-  docs/credits_warp.md). Open: whether any step can be cut. That needs experiments the runner plays out
+  docs/credits_warp.md). Runner confirmed the early pot breaking is not needed and the two torch-room trips are. Open: whether anything else can be cut. That needs experiments the runner plays out
   while checking the conditions with the Lua heap viewer.
 - **Turning time:** the movie spends 21 s on ESS turns whose back-to-back minimum is 4.8 s (see docs).
 - **Name typing cost:** not started. Note that the decomp's `z_file_nameset_JPN.c` actually contains the

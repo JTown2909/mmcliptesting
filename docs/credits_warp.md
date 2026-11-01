@@ -175,8 +175,8 @@ actor-heap allocation/free. Frames = game frames (20 fps); VI = 60 Hz from the m
 ### Heap manip: what each part does
 | frame (VI) | event | effect |
 |---|---|---|
-| 174-212 (507-621) | pots broken, items spawn and despawn | frees space around 0x80416A00-0x80416F00 |
-| 256-420 (753-1245) | two trips into the torch room and back | rooms load/unload; the heap reshuffles |
+| 174-212 (507-621) | pots broken, items spawn and despawn | frees space around 0x80416A00-0x80416F00. **Runner tested: not needed**, the setup works without it |
+| 256-420 (753-1245) | two trips into the torch room and back | rooms load/unload; the heap reshuffles. **Runner confirmed: needed** |
 | **443 (1314)** | **explosion 1**: its effect actor En_Clear_Tag (0x2E90 bytes) sits at 0x80416E90-0x80419D50 | while it exists, re-entering the pot room (frame 501) spawns the **target pot at node 0x80419EE0** (data 0x80419F10) instead of lower |
 | 513 (1524) | explosion 1 effect ends | that space is freed |
 | **777 (2316)** | **explosion 2**: En_Clear_Tag at 0x80414870 | the free block below the pot now starts exactly at **0x80417730** |
