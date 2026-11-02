@@ -67,3 +67,21 @@ ROM with the user's kz states (see `emu/`).
   replayed in the emulator, 87 clip. imbued's setup is among them. Best: see cmg/COUNTER_SETUPS.md.
 * Directional spins: stick must go in on A's frame (or ≤1 frame after); shield timing irrelevant.
   Tap turns must be exactly 1 frame (as with imbued's cardinal turn).
+
+## Laundry Pool: new searches (lp/)
+* Current setup (user): ESS to 706E | target | release + run left (pause-buffered) | run right |
+  shield | align to 4000 | 2 spins in place + ESS to 0400 | tap target | Up 4 frames + A = 9 steps.
+  Placing Link at its end point (C4B3A704, 43BE5D01) facing 0400 and doing the finish reproduces
+  the clip exactly (`lp/lpfinal.py`).
+* Only facings 0240–0440 clip with the finish (Up 4 frames); each facing has its own rest point on
+  a short line (x ≈ -1434.91 at 0240 … -1437.55 at 0440, z ≈ 380.6–380.9), window ≈ 0.05 wide.
+* The corridor (~80 wide, sloped) makes the camera position-dependent, so flat-floor tables do not
+  apply; searches run fully in the emulator.
+* Holding Z+Up into the clip corner pins Link at a facing-dependent exact point (~(-1431.0, 420.3)
+  for facings F700–FB80); no spin from there clips.
+* Search 1 (`lpsearch.py`): entry or target | run d1 n1 | [run d2 n2] | shield | [tap] | finish:
+  no clip.
+* Search 2 (`lpdfs.py`, counter move set, no runs): every sequence of ≤ 3 steps from
+  {ESS ±1..8, tap ×8, spin in place, sidehops, scoot, backflip, targeted spins U/L/R, earliest
+  sideways scoots, wall pins ×8} (~15k distinct states), each state near the clip line tried with
+  ≤ 2 extra turns + finish (Up 4–6 frames): no clip.
